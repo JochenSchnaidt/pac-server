@@ -1,0 +1,1 @@
+Server side application of the Voting PoC.
