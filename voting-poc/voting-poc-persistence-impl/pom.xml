@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.prodyna.pac</groupId>
+		<artifactId>voting-poc</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>voting-poc-persistence-impl</artifactId>
+	<name>Voting Poc Persistence Impl</name>
+	<description>The persistence layer implementation of the Voting PoC</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>mongo-java-driver</artifactId>
+					<groupId>org.mongodb</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.prodyna.pac</groupId>
+			<artifactId>voting-poc-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.prodyna.pac</groupId>
+			<artifactId>voting-poc-persistence</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

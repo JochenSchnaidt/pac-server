@@ -4,4 +4,4 @@
 .settings/
 .recommenders
 .metadata
-/target/
+target/

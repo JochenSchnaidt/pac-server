@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.prodyna.pac</groupId>
+		<artifactId>voting-poc</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>voting-poc-service-impl</artifactId>
+	<name>Voting PoC Service Implementation</name>
+	<description>The business layer implementation of the Voting PoC</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.prodyna.pac</groupId>
+			<artifactId>voting-poc-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.prodyna.pac</groupId>
+			<artifactId>voting-poc-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.prodyna.pac</groupId>
+			<artifactId>voting-poc-persistence</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

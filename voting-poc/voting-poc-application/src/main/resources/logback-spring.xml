@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<springProfile name="default">
+		<include resource="org/springframework/boot/logging/logback/base.xml" />
+		<logger name="org.springframework.web" level="INFO" />
+		<logger name="org.springframework.test" level="INFO" />
+		<logger name="org.springframework.core" level="DEBUG" />
+		<logger name="com.prodyna.pac" level="DEBUG" />
+	</springProfile>
+
+
+	<springProfile name="development">
+
+		<logger name="org.mongodb" level="INFO" />
+		<logger name="org.eclipse.jetty" level="INFO" />
+		<logger name="org.springframework.jndi" level="INFO" />
+		<logger name="com.prodyna.pac" level="DEBUG" />
+
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+			<!-- Log message format -->
+			<encoder>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			</encoder>
+		</appender>
+
+		<appender name="FILE"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>C:\data\log\application\app.log</file>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+				<!-- daily rollover -->
+				<!-- <fileNamePattern>C:\data\log\application\app.%d{yyyy-MM-dd}.%i.log</fileNamePattern> -->
+				<fileNamePattern>C:\data\log\application\app.%d{yyyy-MM-dd}.%i.log
+				</fileNamePattern>
+
+				<!-- keep 10 days' worth of history each file should be at most 50MB -->
+				<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>50MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+
+				<maxHistory>10</maxHistory>
+			</rollingPolicy>
+
+			<encoder>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			</encoder>
+		</appender>
+
+<!-- 		<logger name="com.prodyna.pac" level="DEBUG">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger> -->
+
+		<root level="DEBUG">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</root>
+	</springProfile>
+
+
+	<springProfile name="production">
+
+		<appender name="FILE"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>C:\data\log\application\app.log</file>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+				<!-- daily rollover -->
+				<fileNamePattern>app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+				<!-- keep 30 days' worth of history each file should be at most 100MB -->
+				<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>100MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+
+				<maxHistory>30</maxHistory>
+			</rollingPolicy>
+
+			<encoder>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			</encoder>
+		</appender>
+
+		<logger name="com.prodyna.pac" level="INFO">
+			<appender-ref ref="FILE" />
+		</logger>
+
+		<root level="INFO">
+			<appender-ref ref="FILE" />
+		</root>
+	</springProfile>
+
+</configuration>
