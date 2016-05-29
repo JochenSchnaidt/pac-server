@@ -8,8 +8,12 @@ spring:
         name: Voting PoC Development
         version: 0.0.1
         secret: s3cret
-        jwt:
-            header: horst
+
+
+authentication:
+    jwt:
+        secret: jwt_s3cret
+        header: votingAuthenticationToken
 
 # MongoDB Configuration
 mongodb:

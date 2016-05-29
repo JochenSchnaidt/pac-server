@@ -13,10 +13,6 @@ public class UserValidationServiceImpl extends ValidationServiceImpl implements 
     @Override
     public void validateUserData(UserDTO data) {
 
-        if (StringUtils.isEmpty(data.getPassword())) {
-            throw new ValidationException("password must not be empty");
-        }
-
         if (StringUtils.isEmpty(data.getLastName())) {
             throw new ValidationException("lastname must not be empty");
         }
@@ -26,15 +22,21 @@ public class UserValidationServiceImpl extends ValidationServiceImpl implements 
         }
 
         validateEmail(data.getEmail());
+
+        validatePassword(data.getPassword());
     }
 
     @Override
     public void validateEmail(String email) {
         if (StringUtils.isEmpty(email)) {
             throw new ValidationException("email must not be empty");
-
         }
-
     }
 
+    @Override
+    public void validatePassword(String password) {
+        if (StringUtils.isEmpty(password)) {
+            throw new ValidationException("password must not be empty");
+        }
+    }
 }

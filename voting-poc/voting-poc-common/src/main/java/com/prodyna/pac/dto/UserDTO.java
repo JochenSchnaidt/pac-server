@@ -8,17 +8,19 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class UserDTO extends BaseDTO {
 
-    private String                 id;
-    private String                 firstName;
-    private String                 lastName;
-    private String                 email;
-    private String                 password;
-    private boolean                administrator;
-    private Set<SelectionDTO>      selections  = new HashSet<SelectionDTO>();
+    private String id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+    private boolean administrator;
+    private Set<SelectionDTO> selections = new HashSet<SelectionDTO>();
     private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-    private Date                   creationDate;
+    private Date creationDate;
 
     // explicit default constructor for JSON mapping
     public UserDTO() {

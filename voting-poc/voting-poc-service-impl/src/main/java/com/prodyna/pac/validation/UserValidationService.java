@@ -8,4 +8,5 @@ public interface UserValidationService extends ValidationService {
 
     public void validateEmail(String email);
 
+    public void validatePassword(String password);
 }

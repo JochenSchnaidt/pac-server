@@ -20,16 +20,16 @@ import com.prodyna.pac.validation.UserValidationService;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final Logger               log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private UserPersistenceService     persistenceService;
+    private UserPersistenceService persistenceService;
 
     @Autowired
     private UserVotingsDeletionService votingService;
 
     @Autowired
-    private UserValidationService      validationService;
+    private UserValidationService validationService;
 
     @Override
     public UserDTO create(UserDTO data) {
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         UserDTO persisted = persistenceService.create(data);
         log.debug("user created with id [" + persisted.getId() + "]");
-
+        
         OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("entity created"));
         persisted.setOperationResult(result);
 
@@ -78,13 +78,13 @@ public class UserServiceImpl implements UserService {
 
         persisted.setAdministrator(data.isAdministrator());
 
-        log.debug("user with new data: " + data.toString());       
-        
+        log.debug("user with new data: " + data.toString());
+
         // TODO: if current user is itself or has admin priviliges
         // if () {
         UserDTO updated = persistenceService.update(persisted);
         log.debug("user updated with id [" + updated.getId() + "]");
-        
+
         updated.setOperationResult(new OperationResult(ResultState.SUCCESS, Optional.empty()));
         return updated;
         // } else {
@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
 
     private boolean changed(String oldValue, String newValue) {
 
-        if (StringUtils.hasText(newValue) && ! oldValue.equals(newValue)) {
+        if (StringUtils.hasText(newValue) && !oldValue.equals(newValue)) {
             return true;
         }
         return false;
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isEmpty(newValue)) {
             return false;
         }
-        return ! checkPassword(newValue, oldValue);
+        return !checkPassword(newValue, oldValue);
     }
 
     private final String hashPassword(String password) {

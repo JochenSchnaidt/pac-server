@@ -28,10 +28,10 @@ public class UserController extends AbstractController {
 
     private static final String USER_PATH = "/user/";
 
-    private final Logger        log       = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private UserService         service;
+    private UserService service;
 
     @RequestMapping(path = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO data, UriComponentsBuilder ucb) {
@@ -41,6 +41,8 @@ public class UserController extends AbstractController {
         UserDTO persisted = service.create(data);
         checkOperationResult(persisted, persisted.getId());
         log.info("user created with id [" + persisted.getId() + "]");
+
+        removeInternalData(persisted);
 
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ucb.path(USER_PATH).path(persisted.getEmail()).build().toUri();
@@ -59,6 +61,8 @@ public class UserController extends AbstractController {
         checkOperationResult(updated, updated.getId());
         log.info("vote updated with id [" + updated.getId() + "]");
 
+        removeInternalData(updated);
+
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ucb.path(USER_PATH).path(updated.getId()).build().toUri();
         headers.setLocation(locationUri);
@@ -76,6 +80,8 @@ public class UserController extends AbstractController {
         checkOperationResult(entity, entity.getId());
         log.info("user found an will be returned");
 
+        removeInternalData(entity);
+
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ucb.path(USER_PATH).path(entity.getId()).build().toUri();
         headers.setLocation(locationUri);
@@ -92,6 +98,8 @@ public class UserController extends AbstractController {
         checkOperationResult(wrapper, "no entities found");
         log.info("found " + wrapper.getList().size() + " entities");
 
+        wrapper.getList().forEach(user -> removeInternalData(user));
+
         ResponseEntity<List<UserDTO>> responseEntities = new ResponseEntity<List<UserDTO>>(wrapper.getList(), HttpStatus.OK);
         return responseEntities;
     }
@@ -106,6 +114,11 @@ public class UserController extends AbstractController {
 
         ResponseEntity<String> responseEntities = new ResponseEntity<String>(HttpStatus.OK);
         return responseEntities;
+    }
+
+    private void removeInternalData(UserDTO data) {
+        data.setPassword(null);
+        data.setAuthorities(null);
     }
 
 }
