@@ -78,7 +78,7 @@ public class UserController extends AbstractController {
 
         UserDTO entity = service.get(email);
         checkOperationResult(entity, entity.getId());
-        log.info("user found an will be returned");
+        log.info("user found and will be returned");
 
         removeInternalData(entity);
 
