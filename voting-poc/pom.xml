@@ -24,24 +24,14 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-integration</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
@@ -69,9 +59,9 @@
 	<modules>
 		<module>voting-poc-application</module>
 		<module>voting-poc-common</module>
-		<module>voting-poc-persistence</module>
 		<module>voting-poc-service</module>
 		<module>voting-poc-service-impl</module>
+		<module>voting-poc-persistence</module>
 		<module>voting-poc-persistence-impl</module>
 	</modules>
 </project>
