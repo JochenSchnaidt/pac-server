@@ -1,10 +1,13 @@
 package com.prodyna.pac.service.impl;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -14,6 +17,7 @@ import com.prodyna.pac.dto.OperationResult;
 import com.prodyna.pac.dto.ResultState;
 import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.persistence.UserPersistenceService;
+import com.prodyna.pac.security.Roles;
 import com.prodyna.pac.service.UserService;
 import com.prodyna.pac.validation.UserValidationService;
 
@@ -43,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
         UserDTO persisted = persistenceService.create(data);
         log.debug("user created with id [" + persisted.getId() + "]");
-        
+
         OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("entity created"));
         persisted.setOperationResult(result);
 
@@ -77,23 +81,20 @@ public class UserServiceImpl implements UserService {
         }
 
         persisted.setAdministrator(data.isAdministrator());
-
         log.debug("user with new data: " + data.toString());
 
-        // TODO: if current user is itself or has admin priviliges
-        // if () {
-        UserDTO updated = persistenceService.update(persisted);
-        log.debug("user updated with id [" + updated.getId() + "]");
+        if (isAuthorized(persisted.getId())) {
+            UserDTO updated = persistenceService.update(persisted);
+            log.debug("user updated with id [" + updated.getId() + "]");
 
-        updated.setOperationResult(new OperationResult(ResultState.SUCCESS, Optional.empty()));
-        return updated;
-        // } else {
-        // log.info("entity with id [" + data.getId() + "] is not editable");
-        // OperationResult result = new OperationResult(ResultState.FAILURE,
-        // Optional.of("entity is not editable"));
-        // data.setOperationResult(result);
-        // return data;
-        // }
+            updated.setOperationResult(new OperationResult(ResultState.SUCCESS, Optional.empty()));
+            return updated;
+        } else {
+            log.info("entity with id [" + data.getId() + "] is not editable");
+            OperationResult result = new OperationResult(ResultState.FAILURE, Optional.of("entity is not editable"));
+            data.setOperationResult(result);
+            return data;
+        }
     }
 
     @Override
@@ -133,25 +134,21 @@ public class UserServiceImpl implements UserService {
         validationService.validateEntityId(id);
         log.debug("data passed validation");
 
-        UserDTO persisted = persistenceService.getById(id);
+        if ((!persistenceService.userExists(id)) && isAuthorized(id)) {
 
-        // TODO: if current user is itself or has admin privileges
-        // if (currentUser ) {
+            OperationResult result = votingService.deleteVotings(id);
+            if (!result.getState().equals(ResultState.SUCCESS)) {
+                return new OperationResult(ResultState.FAILURE, Optional.of("was not able to remove the votings of the user"));
+            }
 
-        OperationResult result = votingService.deleteVotings(id);
-        if (!result.getState().equals(ResultState.SUCCESS)) {
-            return new OperationResult(ResultState.FAILURE, Optional.of("was not able to remove the votings of the user"));
+            persistenceService.delete(id);
+
+            log.debug("user with id [" + id + "] deleted");
+            return new OperationResult(ResultState.SUCCESS, Optional.empty());
+        } else {
+            log.info("entity with id [" + id + "] is not editable");
+            return new OperationResult(ResultState.FAILURE, Optional.of("entity is not deletable"));
         }
-
-        persistenceService.delete(id);
-
-        log.debug("user with id [" + id + "] deleted");
-        return new OperationResult(ResultState.SUCCESS, Optional.empty());
-        // } else {
-        // log.info("entity with id [" + id + "] is not editable");
-        // return new OperationResult(ResultState.FAILURE, Optional.of("entity
-        // is not editable"));
-        // }
     }
 
     private boolean changed(String oldValue, String newValue) {
@@ -178,4 +175,21 @@ public class UserServiceImpl implements UserService {
         return BCrypt.checkpw(password, hashed);
     }
 
+    private boolean isAuthorized(String userId) {
+
+        String authenticatedUsers = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (userId.equals(authenticatedUsers)) {
+            return true;
+        } else {
+            Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+            for (GrantedAuthority authority : authorities) {
+                if (authority.getAuthority().equals(Roles.ROLE_ADMINISTRATOR)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }

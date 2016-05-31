@@ -16,5 +16,7 @@ public interface UserPersistenceService {
     public List<UserDTO> getAll();
 
     public void delete(String id);
+    
+    public boolean userExists(String id);
 
 }

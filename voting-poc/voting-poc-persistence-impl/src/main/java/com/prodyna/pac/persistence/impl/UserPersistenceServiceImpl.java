@@ -23,7 +23,7 @@ import com.prodyna.pac.security.Roles;
 @Service
 public class UserPersistenceServiceImpl implements UserPersistenceService {
 
-    private final Logger   log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserRepository repository;
@@ -152,6 +152,11 @@ public class UserPersistenceServiceImpl implements UserPersistenceService {
         dto.setAdministrator(entity.isAdministrator());
         dto.setCreationDate(entity.getCreationDate());
         return dto;
+    }
+
+    @Override
+    public boolean userExists(String id) {
+        return repository.exists(id);
     }
 
 }
