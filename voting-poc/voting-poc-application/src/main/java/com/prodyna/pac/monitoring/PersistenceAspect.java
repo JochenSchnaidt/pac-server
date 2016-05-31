@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class PersistenceServiceAspect extends AbstractAspect {
+public class PersistenceAspect extends AbstractAspect {
 
-    @Pointcut("execution(** com.prodyna.pac.persistence.UserPersistenceService.*(..))")
+    @Pointcut("execution(* com.prodyna.pac.persistence.UserPersistenceService.*(..))")
     private void userPointcut() {
     }
 
-    @Pointcut("execution(** com.prodyna.pac.persistence.VotePersistenceService.*(..))")
+    @Pointcut("execution(* com.prodyna.pac.persistence.VotePersistenceService.*(..))")
     private void votePointcut() {
     }
 

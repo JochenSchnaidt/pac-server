@@ -21,7 +21,6 @@ public class StatisticData {
     public StatisticData(String identifier) {
         super();
         this.identifier = identifier;
-
     }
 
     public synchronized void updateValues(long duration) {

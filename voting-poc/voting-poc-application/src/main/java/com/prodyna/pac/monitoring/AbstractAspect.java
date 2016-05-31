@@ -22,7 +22,7 @@ public abstract class AbstractAspect {
     private StatisticProvider service;
 
     protected Object createStatistic(ProceedingJoinPoint joinPoint) throws Throwable {
-        
+
         log.debug("hijacked method: " + joinPoint.getSignature().getName() + " - hijacked arguments: " + Arrays.toString(joinPoint.getArgs()));
 
         StopWatch watch = new StopWatch();

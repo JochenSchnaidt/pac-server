@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class BusinessServiceAspect extends AbstractAspect {
+public class BusinessAspect extends AbstractAspect {
 
-    @Pointcut("execution(** com.prodyna.pac.service.UserService.*(..))")
+    @Pointcut("execution(* com.prodyna.pac.service.UserService.*(..))")
     private void userPointcut() {
     }
 
-    @Pointcut("execution(** com.prodyna.pac.service.VoteService.*(..))")
+    @Pointcut("execution(* com.prodyna.pac.service.VoteService.*(..))")
     private void votePointcut() {
     }
 
-    @Pointcut("execution(** com.prodyna.pac.service.VotingService.*(..))")
+    @Pointcut("execution(* com.prodyna.pac.service.VotingService.*(..))")
     private void votingPointcut() {
     }
 
