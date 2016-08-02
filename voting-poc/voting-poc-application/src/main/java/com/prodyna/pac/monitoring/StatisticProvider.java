@@ -54,8 +54,6 @@ public class StatisticProvider {
 
             exporter.registerManagedResource(stat, ObjectName.getInstance(mBeanIdentifier));
         }
-
-        beans.values().forEach(stat -> System.out.println(stat.toString()));
     }
 
 }

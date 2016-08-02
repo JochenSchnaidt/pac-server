@@ -39,8 +39,9 @@ public class AuthenticationController extends AbstractController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final JwtAuthenticationResponse response = tokenService.generateToken(authenticationRequest.getEmail(), (String) authentication.getPrincipal(), authentication.getAuthorities());
+        
         ResponseEntity<JwtAuthenticationResponse> responseEntity = new ResponseEntity<JwtAuthenticationResponse>(response, HttpStatus.OK);
+        
         return responseEntity;
-
     }
 }

@@ -25,8 +25,8 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${authentication.jwt.header}")
-    String tokenHeader;
+    @Value("${jwt.authentication.header}")
+    private String tokenHeader;
 
     @Autowired
     private TokenService tokenService;
@@ -36,7 +36,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
+        
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String rawToken = httpRequest.getHeader(tokenHeader);
         log.debug("rawToken in filter: " + rawToken);
@@ -46,13 +46,13 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
             AuthenticationDTO jwtAuthentication = tokenService.checkValidation(rawToken);
 
             log.debug("jwtAuthentication created: " + jwtAuthentication.toString());
-            
+
             if (jwtAuthentication.isAuthenticated()) {
                 UsernamePasswordAuthenticationToken authentication = authService.authenticate(jwtAuthentication);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } else{
+        } else {
             log.error("some kind of authentication found: " + SecurityContextHolder.getContext().getAuthentication().toString());
         }
         chain.doFilter(request, response);

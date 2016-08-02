@@ -50,7 +50,7 @@ public class VotingController extends AbstractController {
     @RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VoteDTO> updateVote(@RequestBody VotingDTO data, UriComponentsBuilder ucb) {
 
-        log.info("update entity from: " + data.toString());
+        log.info("update voting from: " + data.toString());
 
         VoteDTO updated = service.update(data);
         checkOperationResult(updated, updated.getTopic());

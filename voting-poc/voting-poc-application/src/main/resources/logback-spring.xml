@@ -12,10 +12,17 @@
 
 	<springProfile name="development">
 
-		<logger name="org.mongodb" level="INFO" />
-		<logger name="org.eclipse.jetty" level="INFO" />
+		<logger name="org.mongodb" level="ERROR" />
+		<logger name="org.springframework" level="ERROR" />
+		<logger name="org.hibernate" level="ERROR" />
+		<logger name="org.jboss" level="ERROR" />
+				<logger name="org.apache" level="ERROR" />
+		<logger name="com.prodyna.pac" level="INFO" />
+
+
+<!-- 		<logger name="org.mongodb" level="INFO" />
 		<logger name="org.springframework" level="INFO" />
-		<logger name="com.prodyna.pac" level="DEBUG" />
+		<logger name="com.prodyna.pac" level="DEBUG" /> -->
 
 		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 			<!-- Log message format -->
@@ -26,12 +33,12 @@
 
 		<appender name="FILE"
 			class="ch.qos.logback.core.rolling.RollingFileAppender">
-			<file>C:\data\log\application\app.log</file>
+			<file>C:\data\dev\log\application\app.log</file>
 			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 
 				<!-- daily rollover -->
 				<!-- <fileNamePattern>C:\data\log\application\app.%d{yyyy-MM-dd}.%i.log</fileNamePattern> -->
-				<fileNamePattern>C:\data\log\application\app.%d{yyyy-MM-dd}.%i.log
+				<fileNamePattern>C:\data\dev\log\application\app.%d{yyyy-MM-dd}.%i.log
 				</fileNamePattern>
 
 				<!-- keep 10 days' worth of history each file should be at most 50MB -->
@@ -48,11 +55,6 @@
 			</encoder>
 		</appender>
 
-<!-- 		<logger name="com.prodyna.pac" level="DEBUG">
-			<appender-ref ref="FILE" />
-			<appender-ref ref="STDOUT" />
-		</logger> -->
-
 		<root level="DEBUG">
 			<appender-ref ref="FILE" />
 			<appender-ref ref="STDOUT" />
@@ -62,9 +64,13 @@
 
 	<springProfile name="production">
 
+		<logger name="org.mongodb" level="ERROR" />
+		<logger name="org.springframework" level="ERROR" />
+		<logger name="com.prodyna.pac" level="INFO" />
+
 		<appender name="FILE"
 			class="ch.qos.logback.core.rolling.RollingFileAppender">
-			<file>C:\data\log\application\app.log</file>
+			<file>C:\data\prod\log\application\app.log</file>
 			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 
 				<!-- daily rollover -->

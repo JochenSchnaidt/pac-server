@@ -35,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
     private final String CLAIM_KEY_EMAIL = "email";
     private final String CLAIM_KEY_AUTHORITIES = "authorites";
 
-    @Value("${authentication.jwt.secret}")
+    @Value("${jwt.authentication.secret}")
     String secret;
 
     @Autowired

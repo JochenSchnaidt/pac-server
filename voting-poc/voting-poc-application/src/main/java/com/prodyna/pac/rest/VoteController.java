@@ -53,7 +53,7 @@ public class VoteController extends AbstractController {
     @RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VoteDTO> updateVote(@RequestBody VoteDTO data, UriComponentsBuilder ucb) {
 
-        log.info("update entity from: " + data.toString());
+        log.info("update vote from: " + data.toString());
 
         VoteDTO updated = service.update(data);
         checkOperationResult(updated, updated.getTopic());
@@ -74,7 +74,7 @@ public class VoteController extends AbstractController {
 
         VoteDTO entity = service.get(voteId);
         checkOperationResult(entity, entity.getTopic());
-        log.info("vote found an will be returned");
+        log.info("vote found and will be returned");
 
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ucb.path(VOTE_PATH).path(entity.getId()).build().toUri();

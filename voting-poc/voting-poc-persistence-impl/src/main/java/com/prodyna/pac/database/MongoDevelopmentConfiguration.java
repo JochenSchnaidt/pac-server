@@ -1,5 +1,7 @@
 package com.prodyna.pac.database;
 
+import static com.prodyna.pac.Constants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +14,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.mongodb.*;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
-@Profile(value = { "development" })
+@Profile({  STAGE_DEVELOPMENT })
 @Configuration
 @EnableMongoRepositories(basePackages = "com.prodyna.pac.persistence")
 public class MongoDevelopmentConfiguration extends AbstractMongoConfiguration {

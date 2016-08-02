@@ -48,7 +48,7 @@ public abstract class AbstractAspect {
 
         service.updateValue(identifier, className, methodName, watch.getLastTaskTimeMillis());
 
-        log.info("request took: " + watch.getLastTaskTimeMillis() + "ms");
+        log.debug("request took: " + watch.getLastTaskTimeMillis() + "ms");
     }
 
 }

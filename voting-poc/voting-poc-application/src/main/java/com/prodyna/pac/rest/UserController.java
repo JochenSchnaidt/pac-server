@@ -55,11 +55,11 @@ public class UserController extends AbstractController {
     @RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO data, UriComponentsBuilder ucb) {
 
-        log.info("update entity from: " + data.toString());
+        log.info("update user from: " + data.toString());
 
         UserDTO updated = service.update(data);
         checkOperationResult(updated, updated.getId());
-        log.info("vote updated with id [" + updated.getId() + "]");
+        log.info("user updated with id [" + updated.getId() + "]");
 
         removeInternalData(updated);
 

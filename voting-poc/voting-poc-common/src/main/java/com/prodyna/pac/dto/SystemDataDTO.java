@@ -7,4 +7,14 @@ public class SystemDataDTO {
         super();
     }
 
+    private boolean databaseIsAvailable;
+
+    public boolean isDatabaseIsAvailable() {
+        return databaseIsAvailable;
+    }
+
+    public void setDatabaseIsAvailable(boolean databaseIsAvailable) {
+        this.databaseIsAvailable = databaseIsAvailable;
+    }
+
 }

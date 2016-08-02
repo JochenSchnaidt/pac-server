@@ -14,7 +14,7 @@ public interface UserService {
     @PreAuthorize(value = Roles.HAS_ROLE_USER)
     public UserDTO update(UserDTO data);
 
-   // @PreAuthorize(value = Roles.HAS_ROLE_USER)
+    @PreAuthorize(value = Roles.HAS_ROLE_USER)
     public UserDTO get(String email);
 
     public ListWrapperDTO<UserDTO> getAll();

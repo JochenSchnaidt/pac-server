@@ -12,7 +12,7 @@ import com.prodyna.pac.service.SystemService;
 @Component
 public class SystemServiceImpl implements SystemService {
 
-    private final Logger             log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SystemPersistenceService persistenceService;
@@ -20,10 +20,13 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public SystemDataDTO checkSystem() {
 
-        persistenceService.checkAvailability();
+        boolean dbAvailability = persistenceService.checkAvailability();
+
+        SystemDataDTO dto = new SystemDataDTO();
+        dto.setDatabaseIsAvailable(dbAvailability);
 
         log.info("system is fine");
-        return new SystemDataDTO();
+        return dto;
     }
 
 }

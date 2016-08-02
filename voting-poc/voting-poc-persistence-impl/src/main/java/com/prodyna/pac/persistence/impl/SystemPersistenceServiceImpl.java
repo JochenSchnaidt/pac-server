@@ -12,12 +12,15 @@ public class SystemPersistenceServiceImpl implements SystemPersistenceService {
 
     @Autowired
     MongoTemplate mongoTemplate;
-    
-    @Override
-    public void checkAvailability() {
-      
-        mongoTemplate.collectionExists(Vote.class);
 
+    @Override
+    public boolean checkAvailability() {
+
+        if (mongoTemplate.collectionExists(Vote.class) && mongoTemplate.collectionExists(Vote.class)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

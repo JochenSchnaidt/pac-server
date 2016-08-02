@@ -1,21 +1,13 @@
-spring:
-  profiles.active: development
----
-
-spring:
-    profiles: development
-    application:
-        name: Voting PoC Development
-        version: 0.0.1
-        secret: s3cret
-
-
-authentication:
-    jwt:
+application:
+    name: Voting PoC Default Profile
+    version: 0.0.1
+jwt:
+    authentication:
         secret: jwt_s3cret
         header: votingAuthenticationToken
-
-# MongoDB Configuration
+server:
+    address: localhost
+    port: 8080
 mongodb:
     host: localhost
     port: 27017
@@ -23,24 +15,30 @@ mongodb:
     authDatabase: application_users
     user: voting_app
     password: 12345678
-    
-# Jetty Configuration
-server:
-    address: localhost
-    port: 8080
-
+---
+spring:
+    profiles: development
+application:
+    name: Voting PoC Development
+    secret: s3cret
+---
+spring:
+    profiles: developmentNoSecurity
+application:
+    name: Voting PoC Development - no security
 ---
 spring:
     profiles: production
-    application:
-        name: Voting PoC
-        version: 1.0.0
-        secret: 8D~*i%\R|vUGcz334V,;,tQGnLd!Fh
-
+application:
+    secret: 8D~*i%\R|vUGcz334V,;,tQGnLd!Fh
+jwt:
+    authentication:
+        secret: jwt_s3cret
+        header: votingAuthenticationToken
 # MongoDB Configuration
 mongodb:
     server1:
-        host: localhost
+        host: localhost 
         port: 27030
     server2:
         host: localhost
@@ -49,8 +47,6 @@ mongodb:
         host: localhost
         port: 27032
     database: voting_poc
-
-# Jetty Configuration
-server:
-    address: localhost
-    port: 8080
+    authDatabase: application_users
+    user: voting_app
+    password: 12345678

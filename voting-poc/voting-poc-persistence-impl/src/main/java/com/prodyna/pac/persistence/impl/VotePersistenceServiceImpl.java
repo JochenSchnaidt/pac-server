@@ -48,7 +48,6 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
         log.info("new vote created: " + persisted.toString());
 
         return convert(persisted);
-
     }
 
     @Override

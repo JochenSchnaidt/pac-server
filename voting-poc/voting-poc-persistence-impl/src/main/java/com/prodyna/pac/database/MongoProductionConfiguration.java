@@ -1,5 +1,8 @@
 package com.prodyna.pac.database;
 
+import static com.prodyna.pac.Constants.STAGE_PRODUCTION;
+import static com.prodyna.pac.Constants.STAGE_QUALITY_ASSURANCE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +20,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
-@Profile(value = { "production" })
+@Profile(value = { STAGE_QUALITY_ASSURANCE, STAGE_PRODUCTION })
 @Configuration
 @EnableMongoRepositories(basePackages = "com.prodyna.pac.persistence")
 public class MongoProductionConfiguration extends AbstractMongoConfiguration {
