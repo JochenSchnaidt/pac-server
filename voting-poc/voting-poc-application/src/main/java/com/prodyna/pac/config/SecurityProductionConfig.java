@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.prodyna.pac.auth.JwtAuthenticationEntryPoint;
 import com.prodyna.pac.auth.JwtAuthenticationTokenFilter;
 
-@Profile(value = { STAGE_QUALITY_ASSURANCE, STAGE_PRODUCTION })
+@Profile(value = { STAGE_DEVELOPMENT, STAGE_QUALITY_ASSURANCE, STAGE_PRODUCTION })
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity

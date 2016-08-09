@@ -1,6 +1,7 @@
 package com.prodyna.pac.database;
 
-import static com.prodyna.pac.Constants.*;
+import static com.prodyna.pac.Constants.STAGE_DEVELOPMENT;
+import static com.prodyna.pac.Constants.STAGE_DEVELOPMENT_NO_SECURITY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-@Profile({  STAGE_DEVELOPMENT })
+@Profile({ STAGE_DEVELOPMENT, STAGE_DEVELOPMENT_NO_SECURITY })
 @Configuration
 @EnableMongoRepositories(basePackages = "com.prodyna.pac.persistence")
 public class MongoDevelopmentConfiguration extends AbstractMongoConfiguration {

@@ -10,19 +10,20 @@
 	</springProfile>
 
 
-	<springProfile name="development">
+	<springProfile name="development, development.no.security">
 
-		<logger name="org.mongodb" level="ERROR" />
-		<logger name="org.springframework" level="ERROR" />
-		<logger name="org.hibernate" level="ERROR" />
-		<logger name="org.jboss" level="ERROR" />
-				<logger name="org.apache" level="ERROR" />
-		<logger name="com.prodyna.pac" level="INFO" />
-
-
-<!-- 		<logger name="org.mongodb" level="INFO" />
+		<!-- 		
+			<logger name="org.mongodb" level="ERROR" />
+			<logger name="org.springframework" level="ERROR" />
+			<logger name="org.hibernate" level="ERROR" />
+			<logger name="org.jboss" level="ERROR" />
+			<logger name="org.apache" level="ERROR" />
+			<logger name="com.prodyna.pac" level="INFO" />
+		-->
+		
+ 		<logger name="org.mongodb" level="INFO" />
 		<logger name="org.springframework" level="INFO" />
-		<logger name="com.prodyna.pac" level="DEBUG" /> -->
+		<logger name="com.prodyna.pac" level="DEBUG" />  
 
 		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 			<!-- Log message format -->
@@ -62,12 +63,18 @@
 	</springProfile>
 
 
-	<springProfile name="production">
+	<springProfile name="quality.assurance, production">
 
-		<logger name="org.mongodb" level="ERROR" />
-		<logger name="org.springframework" level="ERROR" />
-		<logger name="com.prodyna.pac" level="INFO" />
+		<logger name="org.mongodb" level="INFO" />
+		<logger name="org.springframework" level="INFO" />
+		<logger name="com.prodyna.pac" level="DEBUG" /> 
 
+		<!--
+			<logger name="org.mongodb" level="ERROR" />
+			<logger name="org.springframework" level="ERROR" />
+			<logger name="com.prodyna.pac" level="INFO" />
+ 		-->
+ 
 		<appender name="FILE"
 			class="ch.qos.logback.core.rolling.RollingFileAppender">
 			<file>C:\data\prod\log\application\app.log</file>
@@ -90,13 +97,29 @@
 			</encoder>
 		</appender>
 
-		<logger name="com.prodyna.pac" level="INFO">
-			<appender-ref ref="FILE" />
-		</logger>
+		<!-- remove -->
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+			<!-- Log message format -->
+			<encoder>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			</encoder>
+		</appender>
 
-		<root level="INFO">
+		<root level="DEBUG">
 			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
 		</root>
+
+
+		<!-- 		
+			<logger name="com.prodyna.pac" level="INFO">
+				<appender-ref ref="FILE" />
+			</logger>
+
+			<root level="INFO">
+				<appender-ref ref="FILE" />
+			</root>
+		-->
 	</springProfile>
 
 </configuration>

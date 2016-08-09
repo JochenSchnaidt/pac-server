@@ -39,13 +39,13 @@ jwt:
 mongodb:
     server1:
         host: localhost 
-        port: 27030
+        port: 27017
     server2:
         host: localhost
-        port: 27031
+        port: 27018
     server3:
         host: localhost
-        port: 27032
+        port: 27019
     database: voting_poc
     authDatabase: application_users
     user: voting_app

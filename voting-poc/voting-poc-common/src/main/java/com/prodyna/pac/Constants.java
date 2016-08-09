@@ -10,8 +10,8 @@ public final class Constants {
 
     public static final String STAGE_DEVELOPMENT = "development";
     public static final String STAGE_DEVELOPMENT_NO_SECURITY = "development.no.security";
-    public static final String STAGE_QUALITY_ASSURANCE = "qual";
-    public static final String STAGE_PRODUCTION = "prod";
+    public static final String STAGE_QUALITY_ASSURANCE = "quality.assurance";
+    public static final String STAGE_PRODUCTION = "production";
 
     public static final List<String> KNOWN_STAGES = Collections.unmodifiableList(Arrays.asList(STAGE_DEVELOPMENT, STAGE_DEVELOPMENT_NO_SECURITY, STAGE_QUALITY_ASSURANCE, STAGE_PRODUCTION));
 
