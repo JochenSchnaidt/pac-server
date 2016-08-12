@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class UserDTO extends BaseDTO {
 
     private String id;
