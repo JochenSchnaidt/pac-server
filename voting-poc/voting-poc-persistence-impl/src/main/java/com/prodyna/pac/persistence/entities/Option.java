@@ -8,7 +8,7 @@ public class Option {
 
     @Id
     private String id;
-    private String value;
+    private String name;
     private long counter;
 
     // necessary for automatic mapping
@@ -16,14 +16,14 @@ public class Option {
         super();
     }
 
-    public Option(String value, long counter) {
-        this.value = value;
+    public Option(String name, long counter) {
+        this.name = name;
         this.counter = counter;
     }
 
-    public Option(String id, String value, long counter) {
+    public Option(String id, String name, long counter) {
         this.id = id;
-        this.value = value;
+        this.name = name;
         this.counter = counter;
     }
 
@@ -31,8 +31,8 @@ public class Option {
         return id;
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
     public long getCounter() {
@@ -41,7 +41,7 @@ public class Option {
 
     @Override
     public String toString() {
-        return "Option [id=" + id + ", value=" + value + ", counter=" + counter + "]";
+        return "Option [id=" + id + ", name=" + name + ", counter=" + counter + "]";
     }
 
 }

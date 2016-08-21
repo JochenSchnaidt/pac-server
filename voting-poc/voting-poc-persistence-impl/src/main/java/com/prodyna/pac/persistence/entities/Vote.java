@@ -141,9 +141,9 @@ public class Vote {
 
 			options.forEach(option -> {
 				if (StringUtils.hasText(option.getId())) {
-					set.add(new Option(option.getId(), option.getValue(), option.getCounter()));
+					set.add(new Option(option.getId(), option.getName(), option.getCounter()));
 				} else {
-					set.add(new Option(option.getValue(), option.getCounter()));
+					set.add(new Option(option.getName(), option.getCounter()));
 				}
 			});
 

@@ -1,6 +1,7 @@
 package com.prodyna.pac.rest;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,90 +24,110 @@ import com.prodyna.pac.dto.OperationResult;
 import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.service.VoteService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/vote")
 public class VoteController extends AbstractController {
 
-    private static final String VOTE_PATH = "/vote/";
+	private static final String VOTE_PATH = "/vote/";
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VoteService service;
+	@Autowired
+	private VoteService service;
 
-    @RequestMapping(path = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<VoteDTO> createVote(@RequestBody VoteDTO data, UriComponentsBuilder ucb) {
+	@RequestMapping(path = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<VoteDTO> createVote(@RequestBody VoteDTO data, UriComponentsBuilder ucb) {
 
-        log.info("create vote from: " + data.toString());
+		log.info("create vote from: " + data.toString());
+		VoteDTO persisted = service.create(data);
+		checkOperationResult(persisted, persisted.getTopic());
+		log.info("vote created with id [" + persisted.getId() + "]");
 
-        VoteDTO persisted = service.create(data);
-        checkOperationResult(persisted, persisted.getTopic());
-        log.info("vote created with id [" + persisted.getId() + "]");
+		HttpHeaders headers = new HttpHeaders();
+		URI locationUri = ucb.path(VOTE_PATH).path(persisted.getId()).build().toUri();
+		headers.setLocation(locationUri);
 
-        HttpHeaders headers = new HttpHeaders();
-        URI locationUri = ucb.path(VOTE_PATH).path(persisted.getId()).build().toUri();
-        headers.setLocation(locationUri);
+		ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(persisted, headers, HttpStatus.CREATED);
+		return responseEntity;
+	}
 
-        ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(persisted, headers, HttpStatus.CREATED);
-        return responseEntity;
-    }
+	@RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<VoteDTO> updateVote(@RequestBody VoteDTO data, UriComponentsBuilder ucb) {
 
-    @RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<VoteDTO> updateVote(@RequestBody VoteDTO data, UriComponentsBuilder ucb) {
+		log.info("update vote from: " + data.toString());
+ 		VoteDTO updated = service.update(data);
+		checkOperationResult(updated, updated.getTopic());
+		log.info("vote updated with id [" + updated.getId() + "]");
 
-        log.info("update vote from: " + data.toString());
+		HttpHeaders headers = new HttpHeaders();
+		URI locationUri = ucb.path(VOTE_PATH).path(updated.getId()).build().toUri();
+		headers.setLocation(locationUri);
 
-        VoteDTO updated = service.update(data);
-        checkOperationResult(updated, updated.getTopic());
-        log.info("vote updated with id [" + updated.getId() + "]");
+		ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(updated, headers, HttpStatus.OK);
+		return responseEntity;
+ 	}
 
-        HttpHeaders headers = new HttpHeaders();
-        URI locationUri = ucb.path(VOTE_PATH).path(updated.getId()).build().toUri();
-        headers.setLocation(locationUri);
+	@RequestMapping(path = "/{voteId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<VoteDTO> getVote(@PathVariable String voteId, UriComponentsBuilder ucb) {
 
-        ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(updated, headers, HttpStatus.OK);
-        return responseEntity;
-    }
+		log.info("get vote with id [" + voteId + "]");
+ 		VoteDTO entity = service.get(voteId);
+		checkOperationResult(entity, entity.getTopic());
+		log.info("vote found and will be returned");
 
-    @RequestMapping(path = "/{voteId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<VoteDTO> getVote(@PathVariable String voteId, UriComponentsBuilder ucb) {
+		HttpHeaders headers = new HttpHeaders();
+		URI locationUri = ucb.path(VOTE_PATH).path(entity.getId()).build().toUri();
+		headers.setLocation(locationUri);
 
-        log.info("get vote with id [" + voteId + "]");
+		ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(entity, headers, HttpStatus.OK);
+		return responseEntity;
+	}
 
-        VoteDTO entity = service.get(voteId);
-        checkOperationResult(entity, entity.getTopic());
-        log.info("vote found and will be returned");
+	@RequestMapping(path = "/user/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<List<VoteDTO>> getAllVotesForUser(@PathVariable String userId, UriComponentsBuilder ucb) {
 
-        HttpHeaders headers = new HttpHeaders();
-        URI locationUri = ucb.path(VOTE_PATH).path(entity.getId()).build().toUri();
-        headers.setLocation(locationUri);
+		log.info("get all votes for user with id [" + userId + "]");
+	/*	ListWrapperDTO<VoteDTO> wrapper = service.getAllByUser(userId);
+		checkOperationResult(wrapper, "no entities found");
+		log.info("found " + wrapper.getList().size() + " entities");
 
-        ResponseEntity<VoteDTO> responseEntity = new ResponseEntity<VoteDTO>(entity, headers, HttpStatus.OK);
-        return responseEntity;
-    }
+		ResponseEntity<List<VoteDTO>> responseEntities = new ResponseEntity<List<VoteDTO>>(wrapper.getList(),
+				HttpStatus.OK);
+	return responseEntities;
+	
+	*/
+		
 
-    @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<VoteDTO>> getAllVote(@PathVariable String userId, UriComponentsBuilder ucb) {
 
-        log.info("get all votes for user with id [" + userId + "]");
-        ListWrapperDTO<VoteDTO> wrapper = service.getAllByUser(userId);
-        checkOperationResult(wrapper, "no entities found");
-        log.info("found " + wrapper.getList().size() + " entities");
+	ResponseEntity<List<VoteDTO>> responseEntity = new ResponseEntity<List<VoteDTO>>(new ArrayList<VoteDTO>(), HttpStatus.OK);
+	return responseEntity;
+	
+	}
+	
+	@RequestMapping(path = "all/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<List<VoteDTO>> getAllVotes(UriComponentsBuilder ucb) {
 
-        ResponseEntity<List<VoteDTO>> responseEntities = new ResponseEntity<List<VoteDTO>>(wrapper.getList(), HttpStatus.OK);
-        return responseEntities;
-    }
+		log.info("get all votes");
+		ListWrapperDTO<VoteDTO> wrapper = service.getAll();
+		checkOperationResult(wrapper, "no entities found");
+		log.info("found " + wrapper.getList().size() + " entities");
 
-    @RequestMapping(path = "/{voteId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> deleteVote(@PathVariable String voteId, UriComponentsBuilder ucb) {
+		ResponseEntity<List<VoteDTO>> responseEntities = new ResponseEntity<List<VoteDTO>>(wrapper.getList(), HttpStatus.OK);
+		return responseEntities;
+	}
+	
 
-        log.info("delete vote with id [" + voteId + "]");
-        OperationResult result = service.delete(voteId);
-        checkOperationResult(result, "error deleting vote " + voteId);
-        log.info("vote deletion returned: " + result.getState());
+	@RequestMapping(path = "/{voteId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<String> deleteVote(@PathVariable String voteId, UriComponentsBuilder ucb) {
 
-        ResponseEntity<String> responseEntities = new ResponseEntity<String>(HttpStatus.OK);
-        return responseEntities;
-    }
+		log.info("delete vote with id [" + voteId + "]");
+		OperationResult result = service.delete(voteId);
+		checkOperationResult(result, "error deleting vote " + voteId);
+		log.info("vote deletion returned: " + result.getState());
+
+		ResponseEntity<String> responseEntities = new ResponseEntity<String>(HttpStatus.OK);
+		return responseEntities;
+	}
 
 }

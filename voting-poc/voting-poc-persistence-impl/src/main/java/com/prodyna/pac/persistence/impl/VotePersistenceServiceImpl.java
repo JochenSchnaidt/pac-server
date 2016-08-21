@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.prodyna.pac.dto.OptionDTO;
+import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.exception.EntityNotFoundException;
 import com.prodyna.pac.exception.ProcessingException;
 import com.prodyna.pac.persistence.VotePersistenceService;
+import com.prodyna.pac.persistence.entities.User;
 import com.prodyna.pac.persistence.entities.Vote;
 import com.prodyna.pac.persistence.repository.VoteRepository;
 
@@ -29,6 +31,8 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
     @Override
     public VoteDTO create(VoteDTO data) {
 
+    	 log.info("create reached");
+    	
         //@formatter:off
 	    Vote vote = new Vote.Builder()
 	            .topic(data.getTopic())
@@ -118,12 +122,24 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
 
         final Set<OptionDTO> set = new HashSet<OptionDTO>();
         if (null != entity.getOptions()) {
-            entity.getOptions().forEach(option -> set.add(new OptionDTO(option.getId(), option.getValue(), option.getCounter())));
+            entity.getOptions().forEach(option -> set.add(new OptionDTO(option.getId(), option.getName(), option.getCounter())));
         }
         dto.setOptions(set);
 
         dto.setCreationDate(entity.getCreationDate());
         return dto;
     }
+
+	@Override
+	public List<VoteDTO> getAll() {
+
+        List<Vote> allUsers = repository.findAll();
+
+        List<VoteDTO> list = new ArrayList<VoteDTO>();
+
+        allUsers.forEach(user -> list.add(convert(user)));
+
+        return list;
+	}
 
 }

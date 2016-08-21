@@ -3,7 +3,7 @@ package com.prodyna.pac.dto;
 public class OptionDTO {
 
     private String id;
-    private String value;
+    private String name;
     private long counter;
 
     // explicit default constructor for JSON mapping
@@ -11,14 +11,14 @@ public class OptionDTO {
         super();
     }
 
-    public OptionDTO(String id, String value, long counter) {
+    public OptionDTO(String id, String name, long counter) {
         this.id = id;
-        this.value = value;
+        this.name = name;
         this.counter = counter;
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
     public long getCounter() {
@@ -39,7 +39,7 @@ public class OptionDTO {
 
     @Override
     public String toString() {
-        return "OptionDTO [id=" + id + ", value=" + value + ", counter=" + counter + "]";
+        return "OptionDTO [id=" + id + ", name=" + name + ", counter=" + counter + "]";
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import com.prodyna.pac.dto.ListWrapperDTO;
 import com.prodyna.pac.dto.OperationResult;
 import com.prodyna.pac.dto.ResultState;
+import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.persistence.VotePersistenceService;
 import com.prodyna.pac.service.VoteService;
@@ -19,20 +20,20 @@ import com.prodyna.pac.validation.VoteValidationService;
 @Service
 public class VoteServiceImpl implements VoteService {
 
-    private final Logger           log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VotePersistenceService persistenceService;
+	@Autowired
+	private VotePersistenceService persistenceService;
 
-    @Autowired
-    private VoteValidationService  validationService;
+	@Autowired
+	private VoteValidationService validationService;
 
-    @Override
-    public VoteDTO create(VoteDTO data) {
+	@Override
+	public VoteDTO create(VoteDTO data) {
 
-        log.debug("create vote from data: " + data.toString());
+		log.debug("create vote from data: " + data.toString());
 
-        validationService.validateVoteData(data, false);
+		validationService.validateVoteData(data, false);
         log.debug("data passed validation");
 
         VoteDTO persisted = persistenceService.create(data);
@@ -137,4 +138,17 @@ public class VoteServiceImpl implements VoteService {
         }
         return false;
     }
+
+	@Override
+	public ListWrapperDTO<VoteDTO> getAll() {
+
+        log.debug("find all votes");
+
+        ListWrapperDTO<VoteDTO> dto = new ListWrapperDTO<>(persistenceService.getAll());
+        log.debug("returning " + dto.getList().size() + " user");
+
+        dto.setOperationResult(new OperationResult(ResultState.SUCCESS, Optional.empty()));
+        return dto;
+		
+	}
 }
