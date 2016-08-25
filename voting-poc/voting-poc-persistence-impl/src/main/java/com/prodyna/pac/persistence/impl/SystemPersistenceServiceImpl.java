@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.prodyna.pac.persistence.SystemPersistenceService;
+import com.prodyna.pac.persistence.entities.User;
 import com.prodyna.pac.persistence.entities.Vote;
 
 @Service
@@ -16,7 +17,7 @@ public class SystemPersistenceServiceImpl implements SystemPersistenceService {
     @Override
     public boolean checkAvailability() {
 
-        if (mongoTemplate.collectionExists(Vote.class) && mongoTemplate.collectionExists(Vote.class)) {
+        if (mongoTemplate.collectionExists(Vote.class) && mongoTemplate.collectionExists(User.class)) {
             return true;
         } else {
             return false;
