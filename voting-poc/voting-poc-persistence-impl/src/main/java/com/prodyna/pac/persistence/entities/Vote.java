@@ -14,85 +14,93 @@ import com.prodyna.pac.exception.ValidationException;
 @Document(collection = "votes")
 public class Vote {
 
-    @Id
-    private String      id;
-    private String      topic;
-    private String      description;
-    private Set<Option> options;
-    private boolean     editable;
-    private Date        creationDate;
-    private String      createdBy;
+	@Id
+	private String id;
+	private String topic;
+	private String description;
+	private Set<Option> options;
+	private boolean editable;
+	private Date creationDate;
+	private String createdBy;
+	private String createdByUserName;
 
-    // necessary for automatic mapping
-    public Vote() {
-        super();
-    }
+	// necessary for automatic mapping
+	public Vote() {
+		super();
+	}
 
-    private Vote(Builder builder) {
+	private Vote(Builder builder) {
 
-        if (null == builder) {
-            throw new ValidationException("Validation in Vote for parameter builder failed");
-        }
+		if (null == builder) {
+			throw new ValidationException("Validation in Vote for parameter builder failed");
+		}
 
-        if (StringUtils.hasText(builder.id)) {
-            this.id = builder.id;
-        }
+		if (StringUtils.hasText(builder.id)) {
+			this.id = builder.id;
+		}
 
-        this.topic = builder.topic;
-        this.description = builder.description;
-        this.options = builder.options;
-        this.editable = builder.editable;
-        this.createdBy = builder.createdBy;
-        this.creationDate = builder.creationDate;
-    }
+		this.topic = builder.topic;
+		this.description = builder.description;
+		this.options = builder.options;
+		this.editable = builder.editable;
+		this.createdBy = builder.createdBy;
+		this.creationDate = builder.creationDate;
+		this.createdByUserName = builder.createdByUserName;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getTopic() {
-        return topic;
-    }
+	public String getTopic() {
+		return topic;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public boolean isEditable() {
-        return editable;
-    }
+	public boolean isEditable() {
+		return editable;
+	}
 
-    public Set<Option> getOptions() {
-        return options;
-    }
+	public Set<Option> getOptions() {
+		return options;
+	}
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
+	public Date getCreationDate() {
+		return creationDate;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    @Override
-    public String toString() {
-        return "Vote [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options + ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy="
-                + createdBy + "]";
-    }
+	public String getCreatedByUserName() {
+		return createdByUserName;
+	}
 
-    public static class Builder {
+	@Override
+	public String toString() {
+		return "Vote [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options
+				+ ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy=" + createdBy
+				+ ", createdByUserName=" + createdByUserName + "]";
+	}
+
+	public static class Builder {
 
 		private String id;
 		private String topic;
 		private String description;
-		private Set<Option> options; 
+		private Set<Option> options;
 		private boolean editable = true;
 		private String createdBy;
 		private Date creationDate;
+		private String createdByUserName;
 
-        public Builder() {
-            creationDate(null);
-        }
+		public Builder() {
+			creationDate(null);
+		}
 
 		public Builder topic(String topic) {
 			if (StringUtils.hasText(topic)) {
@@ -162,6 +170,16 @@ public class Vote {
 				this.createdBy = createdBy;
 			} else {
 				throw new ValidationException("Validation in Builder for parameter createdBy failed");
+			}
+			return this;
+		}
+
+		public Builder createdByUserName(String createdByUserName) {
+
+			if (StringUtils.hasText(createdByUserName)) {
+				this.createdByUserName = createdByUserName;
+			} else {
+				throw new ValidationException("Validation in Builder for parameter createdByUserName failed");
 			}
 			return this;
 		}

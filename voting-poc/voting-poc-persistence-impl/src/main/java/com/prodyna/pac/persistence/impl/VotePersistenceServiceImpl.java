@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.prodyna.pac.dto.OptionDTO;
-import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.exception.EntityNotFoundException;
 import com.prodyna.pac.exception.ProcessingException;
 import com.prodyna.pac.persistence.VotePersistenceService;
-import com.prodyna.pac.persistence.entities.User;
 import com.prodyna.pac.persistence.entities.Vote;
 import com.prodyna.pac.persistence.repository.VoteRepository;
 
@@ -39,6 +37,7 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
 	            .description(data.getDescription())
 	            .editable(data.isEditable())
 	            .createdBy(data.getCreatedBy())
+	            .createdByUserName(data.getCreatedByUserName())
 	            .options(data.getOptions())
                 .build();
         //@formatter:on
@@ -119,6 +118,7 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
         dto.setDescription(entity.getDescription());
         dto.setEditable(entity.isEditable());
         dto.setCreatedBy(entity.getCreatedBy());
+        dto.setCreatedByUserName(entity.getCreatedByUserName());
 
         final Set<OptionDTO> set = new HashSet<OptionDTO>();
         if (null != entity.getOptions()) {

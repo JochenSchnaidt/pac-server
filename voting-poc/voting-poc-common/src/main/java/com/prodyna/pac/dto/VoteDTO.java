@@ -13,6 +13,7 @@ public class VoteDTO extends BaseDTO {
 	private boolean editable;
 	private Date creationDate;
 	private String createdBy;
+	private String createdByUserName;
 
 	// explicit default constructor for JSON mapping
 	public VoteDTO() {
@@ -75,10 +76,19 @@ public class VoteDTO extends BaseDTO {
 		this.createdBy = createdBy;
 	}
 
+	public String getCreatedByUserName() {
+		return createdByUserName;
+	}
+
+	public void setCreatedByUserName(String createdByUserName) {
+		this.createdByUserName = createdByUserName;
+	}
+
 	@Override
 	public String toString() {
 		return "VoteDTO [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options
-				+ ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy=" + createdBy + "]";
+				+ ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy=" + createdBy
+				+ ", createdByUserName=" + createdByUserName + "]";
 	}
 
 }
