@@ -4,7 +4,7 @@ application:
 jwt:
     authentication:
         secret: jwt_s3cret
-        header: votingAuthenticationToken
+        header: X-AUTH-TOKEN
 server:
     address: localhost
     port: 8080
@@ -31,10 +31,6 @@ spring:
     profiles: production
 application:
     secret: 8D~*i%\R|vUGcz334V,;,tQGnLd!Fh
-jwt:
-    authentication:
-        secret: jwt_s3cret
-        header: votingAuthenticationToken
 # MongoDB Configuration
 mongodb:
     server1:
