@@ -7,10 +7,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserDTO extends BaseDTO {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-    private String id;
+public class UserDTO extends BaseDTO implements UserDetails {
+
+	private static final long serialVersionUID = 1L;
+	
+	private String id;
     private String firstName;
     private String lastName;
     private String email;
@@ -102,5 +107,64 @@ public class UserDTO extends BaseDTO {
         return "UserDTO [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", administrator=" + administrator + ", selections="
                 + selections + ", authorities=" + authorities + ", creationDate=" + creationDate + ", operationResult=" + operationResult + "]";
     }
+
+    
+    
+    @JsonIgnore
+	private long expires;
+
+	public long getExpires() {
+		return expires;
+	}
+
+	public void setExpires(long expires) {
+		this.expires = expires;
+	}
+    
+    
+    // fulfill UserDetails requirements
+    
+	@Override
+	public String getUsername() {
+		return getEmail();
+	}
+
+	
+	
+	
+	
+	@JsonIgnore
+	private boolean accountExpired;
+
+	@JsonIgnore
+	private boolean accountLocked;
+
+	@JsonIgnore
+	private boolean credentialsExpired;
+
+	@JsonIgnore
+	private boolean accountEnabled;
+
+	
+	
+	@Override
+	public boolean isAccountNonExpired() {
+		return !accountExpired;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return !accountLocked;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return !credentialsExpired;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return !accountEnabled;
+	}
 
 }

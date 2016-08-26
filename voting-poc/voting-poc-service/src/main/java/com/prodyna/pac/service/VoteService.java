@@ -9,19 +9,21 @@ import com.prodyna.pac.security.Roles;
 
 public interface VoteService {
 
-    @PreAuthorize(value = Roles.HAS_ROLE_USER)
-    public VoteDTO create(VoteDTO data);
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public VoteDTO create(VoteDTO data);
 
-    @PreAuthorize(value = Roles.HAS_ROLE_USER)
-    public VoteDTO update(VoteDTO data);
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public VoteDTO update(VoteDTO data);
 
-    @PreAuthorize(value = Roles.HAS_ROLE_USER)
-    public VoteDTO get(String id);
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public VoteDTO get(String id);
 
-    public ListWrapperDTO<VoteDTO> getAll();
-    
-    public ListWrapperDTO<VoteDTO> getAllByUser(String userId);
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public ListWrapperDTO<VoteDTO> getAll();
 
-    @PreAuthorize(value = Roles.HAS_ROLE_USER)
-    public OperationResult delete(String id);
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public ListWrapperDTO<VoteDTO> getAllByUser(String userId);
+
+	@PreAuthorize(value = Roles.HAS_ROLE_USER)
+	public OperationResult delete(String id);
 }

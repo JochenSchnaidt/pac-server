@@ -8,77 +8,90 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.prodyna.pac.auth.JwtAuthenticationEntryPoint;
-import com.prodyna.pac.auth.JwtAuthenticationTokenFilter;
+import com.prodyna.pac.auth.StatelessAuthenticationFilter;
+import com.prodyna.pac.auth.StatelessLoginFilter;
+import com.prodyna.pac.service.TokenAuthenticationService;
+import com.prodyna.pac.service.UserService;
+import com.prodyna.pac.validation.UserValidationService;
 
 @Profile(value = { STAGE_DEVELOPMENT, STAGE_QUALITY_ASSURANCE, STAGE_PRODUCTION })
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
+@Order(1)
 public class SecurityProductionConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+	public SecurityProductionConfig() {
+		super(true);
+	}
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Autowired
+	private UserService userService;
 
-    @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
-        JwtAuthenticationTokenFilter authenticationTokenFilter = new JwtAuthenticationTokenFilter();
-        authenticationTokenFilter.setAuthenticationManager(authenticationManagerBean());
-        return authenticationTokenFilter;
-    }
+	@Autowired
+	private UserValidationService validationService;
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
 
-        //@formatter:off
-        httpSecurity
-                // we don't need CSRF because our token is invulnerable
-                .csrf().disable()
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-                // don't create session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
+	}
 
-                .and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler) // Notice the entry point
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
 
-                .and().authorizeRequests()
+		//@formatter:off
+		http.exceptionHandling()
+			.and().anonymous()
+			.and().servletApi()
+			.and().headers()
+			.cacheControl().disable()
+			.and()
+		
+			.authorizeRequests()
 
-                // allow anonymous resource requests
-                .antMatchers(HttpMethod.GET, "/system/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
+		        // allow anonymous resource requests
+		   //     .antMatchers("/").permitAll().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/vote/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/vote/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/vote/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/vote/**").authenticated()
+		        // allow anonymous POSTs to login
+		        .antMatchers(HttpMethod.POST, "/auth/").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/user/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/user/**").permitAll()
-                .antMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+		        // allow anonymous GETs to API
+		//        .antMatchers(HttpMethod.GET, "/api/**").permitAll()
 
-                .antMatchers(HttpMethod.POST, "/voting/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/voting/**").authenticated();
-        //@formatter:on
+		        // defined Admin only API area
+		        .antMatchers("/admin/**").hasRole("ADMIN")
 
-        // Custom JWT based security filter
-        httpSecurity.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+		        // all other request need to be authenticated
+		   //     .anyRequest().hasRole("USER").and()
+		        .anyRequest().authenticated().and()
 
-        // disable page caching
-        httpSecurity.headers().cacheControl();
-    }
+		        // custom JSON based authentication by POST of  {"username":"<name>","password":"<password>"} which sets the token header upon authentication
+		        .addFilterBefore(new StatelessLoginFilter("/auth/", authenticationManager(), userService, validationService, tokenAuthenticationService ), 
+		        		UsernamePasswordAuthenticationFilter.class)
+
+		        // custom Token based authentication based on the header  previously given to the client
+		        .addFilterBefore(new StatelessAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class);
+		
+		//@formatter:on
+	}
+
 }

@@ -4,7 +4,6 @@ application:
 jwt:
     authentication:
         secret: jwt_s3cret
-        header: X-AUTH-TOKEN
 server:
     address: localhost
     port: 8080

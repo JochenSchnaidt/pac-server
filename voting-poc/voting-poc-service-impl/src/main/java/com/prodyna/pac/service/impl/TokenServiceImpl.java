@@ -3,21 +3,20 @@ package com.prodyna.pac.service.impl;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.prodyna.pac.auth.JwtAuthenticationResponse;
-import com.prodyna.pac.dto.AuthenticationDTO;
+import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.service.TokenService;
 import com.prodyna.pac.validation.TokenValidationService;
 
@@ -28,86 +27,111 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class TokenServiceImpl implements TokenService {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String CLAIM_KEY_CREATED = "created";
-    private final String CLAIM_KEY_ID = "id";
-    private final String CLAIM_KEY_EMAIL = "email";
-    private final String CLAIM_KEY_AUTHORITIES = "authorites";
+	private final String CLAIM_KEY_CREATED = "created";
+	private final String CLAIM_KEY_ID = "id";
+	private final String CLAIM_KEY_EMAIL = "email";
+	private final String CLAIM_KEY_ADMINISTRATOR = "administrator";
+	private final String CLAIM_KEY_AUTHORITIES = "authorites";
 
-    @Value("${jwt.authentication.secret}")
-    String secret;
+	@Value("${jwt.authentication.secret}")
+	private String secret;
 
-    @Autowired
-    private TokenValidationService validationService;
+	@Autowired
+	private TokenValidationService validationService;
 
-    @Override
-    public JwtAuthenticationResponse generateToken(String email, String id, Collection<GrantedAuthority> authorities) {
+	@Override
+	public String generateToken(UserDTO user) {
 
-        validationService.validateEntityId(id);
-        validationService.validateEmail(email);
-        validationService.validateAuthorities(authorities);
-        log.debug("data passed validation");
+		validationService.validateEntityId(user.getId());
+		validationService.validateEmail(user.getEmail());
+		validationService.validateAuthorities(user.getAuthorities());
+		log.debug("data passed validation");
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_ID, id);
-        claims.put(CLAIM_KEY_EMAIL, email);
-        claims.put(CLAIM_KEY_AUTHORITIES, authorities);
-        claims.put(CLAIM_KEY_CREATED, new Date());
+		Map<String, Object> claims = new HashMap<>();
+		claims.put(CLAIM_KEY_ID, user.getId());
+		claims.put(CLAIM_KEY_EMAIL, user.getEmail());
+		claims.put(CLAIM_KEY_ADMINISTRATOR, user.isAdministrator());
+		claims.put(CLAIM_KEY_AUTHORITIES, user.getAuthorities());
+		claims.put(CLAIM_KEY_CREATED, new Date());
 
-        String generatedToken = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
-        log.debug("authentication token created: " + generatedToken);
+		String token = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
+		log.debug("authentication token created: " + token);
 
-        JwtAuthenticationResponse response = new JwtAuthenticationResponse(generatedToken);
-        log.debug("jwt authentication created: " + response.toString());
+		return token;
+	}
 
-        return response;
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public UserDTO parseUser(String token) {
 
-    @Override
-    public AuthenticationDTO checkValidation(String rawToken) {
+		if (!StringUtils.hasText(token)) {
+			return null;
+		}
 
-        if (!StringUtils.hasText(rawToken)) {
-            return new AuthenticationDTO(null, null, false);
-        }
+		Claims claims = getClaimsFromToken(token);
 
-        Claims claims = getClaimsFromToken(rawToken);
+		if (null == claims) {
+			return null;
+		}
 
-        if (null == claims) {
-            return new AuthenticationDTO(null, null, false);
-        }
+		// check format
+		if (!claims.containsKey(CLAIM_KEY_ID)) {
+			log.error("claims does not contain an ID");
+			return null;
+		}
+		if (!claims.containsKey(CLAIM_KEY_EMAIL)) {
+			log.error("claims does not contain an email");
+			return null;
+		}
+		// if (!claims.containsKey(CLAIM_KEY_ADMINISTRATOR)) {
+		// return null;
+		// }
+		if (!claims.containsKey(CLAIM_KEY_AUTHORITIES)) {
+			log.error("claims does not contain any granted authorities");
+			return null;
+		}
+		if (!claims.containsKey(CLAIM_KEY_CREATED)) {
+			log.error("claims does not contain any creation information");
+			return null;
+		}
 
-        // check format
-        if (!claims.containsKey(CLAIM_KEY_ID)) {
-            return new AuthenticationDTO(null, null, false);
-        }
-        if (!claims.containsKey(CLAIM_KEY_EMAIL)) {
-            return new AuthenticationDTO(null, null, false);
-        }
-        if (!claims.containsKey(CLAIM_KEY_AUTHORITIES)) {
-            return new AuthenticationDTO(null, null, false);
-        }
-        if (!claims.containsKey(CLAIM_KEY_CREATED)) {
-            return new AuthenticationDTO(null, null, false);
-        }
+		LocalDateTime created = LocalDateTime.ofInstant(Instant.ofEpochMilli((long) claims.get(CLAIM_KEY_CREATED)), ZoneId.systemDefault());
 
-        LocalDateTime created = LocalDateTime.ofInstant(Instant.ofEpochMilli((long) claims.get(CLAIM_KEY_CREATED)), ZoneId.systemDefault());
+		if (LocalDateTime.now().isAfter(created.plusWeeks(1L))) {
+			return null;
+		} else {
 
-        if (LocalDateTime.now().isAfter(created.plusWeeks(1L))) {
-            return new AuthenticationDTO(null, null, false);
-        } else {
-            return new AuthenticationDTO((String) claims.get(CLAIM_KEY_ID), (String) claims.get(CLAIM_KEY_EMAIL), true);    
-        }
-    }
+			UserDTO user = new UserDTO();
+			user.setId((String) claims.get(CLAIM_KEY_ID));
+			user.setEmail((String) claims.get(CLAIM_KEY_EMAIL));
 
-    private Claims getClaimsFromToken(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-            log.debug("claims: " + claims.toString());
-        } catch (Exception e) {
-            claims = null;
-        }
-        return claims;
-    }
+			// user.setAdministrator((Boolean) claims.get(CLAIM_KEY_ADMINISTRATOR));
+
+			List<Map<String, String>> list = (List<Map<String, String>>) claims.get(CLAIM_KEY_AUTHORITIES);
+
+			list.forEach(entry -> {
+				entry.values().forEach(auth -> {
+					user.getAuthorities().add(new SimpleGrantedAuthority(auth));
+				});
+			});
+
+			log.debug("user created from token: " + user.toString());
+
+			return user;
+		}
+	}
+
+	private Claims getClaimsFromToken(String token) {
+		Claims claims;
+		try {
+			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+			log.debug("claims: " + claims.toString());
+		} catch (Exception e) {
+			claims = null;
+		}
+		return claims;
+	}
+
 }
