@@ -1,6 +1,7 @@
 package com.prodyna.pac.auth;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,6 +30,15 @@ public class StatelessAuthenticationFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 
+		HttpServletRequest request = (HttpServletRequest) req;
+		
+		Enumeration headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String key = (String) headerNames.nextElement();
+			String value = request.getHeader(key);
+System.out.println("\t " + key + " - " + value);
+		}
+		
 		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) req);
 
 		if (null != authentication) {

@@ -85,9 +85,6 @@ public class TokenServiceImpl implements TokenService {
 			log.error("claims does not contain an email");
 			return null;
 		}
-		// if (!claims.containsKey(CLAIM_KEY_ADMINISTRATOR)) {
-		// return null;
-		// }
 		if (!claims.containsKey(CLAIM_KEY_AUTHORITIES)) {
 			log.error("claims does not contain any granted authorities");
 			return null;
@@ -100,14 +97,13 @@ public class TokenServiceImpl implements TokenService {
 		LocalDateTime created = LocalDateTime.ofInstant(Instant.ofEpochMilli((long) claims.get(CLAIM_KEY_CREATED)), ZoneId.systemDefault());
 
 		if (LocalDateTime.now().isAfter(created.plusWeeks(1L))) {
+			log.error("token is expired");
 			return null;
 		} else {
 
 			UserDTO user = new UserDTO();
 			user.setId((String) claims.get(CLAIM_KEY_ID));
 			user.setEmail((String) claims.get(CLAIM_KEY_EMAIL));
-
-			// user.setAdministrator((Boolean) claims.get(CLAIM_KEY_ADMINISTRATOR));
 
 			List<Map<String, String>> list = (List<Map<String, String>>) claims.get(CLAIM_KEY_AUTHORITIES);
 

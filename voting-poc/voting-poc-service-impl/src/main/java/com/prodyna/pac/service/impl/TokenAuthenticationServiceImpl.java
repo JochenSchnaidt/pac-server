@@ -29,7 +29,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public void addAuthentication(HttpServletResponse response, UserAuthentication authentication) {
 		final UserDTO user = authentication.getDetails();
 		user.setExpires(System.currentTimeMillis() + TEN_DAYS);
-		response.addHeader(JWT_AUTHENTICATION_HEADER, tokenService.generateToken(user));
+		response.addHeader(JWT_AUTHENTICATION_HEADER, tokenService.generateToken(user));	 
 	}
 
 	@Override
@@ -37,6 +37,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		final String token = request.getHeader(JWT_AUTHENTICATION_HEADER);
 
+		System.out.println("\n"+token+"\n");
+		
 		if (token != null) {
 			final UserDTO user = tokenService.parseUser(token);
 			if (user != null) {

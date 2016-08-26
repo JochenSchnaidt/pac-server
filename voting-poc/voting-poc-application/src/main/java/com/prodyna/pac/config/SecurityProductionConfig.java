@@ -17,8 +17,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
+import com.prodyna.pac.auth.SimpleCORSFilter;
 import com.prodyna.pac.auth.StatelessAuthenticationFilter;
 import com.prodyna.pac.auth.StatelessLoginFilter;
 import com.prodyna.pac.service.TokenAuthenticationService;
@@ -58,39 +61,35 @@ public class SecurityProductionConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		//@formatter:off
-		http.exceptionHandling()
-			.and().anonymous()
-			.and().servletApi()
-			.and().headers()
-			.cacheControl().disable()
-			.and()
-		
-			.authorizeRequests()
+		// @formatter:off
+		http.exceptionHandling().and().anonymous().and().servletApi().and().headers().cacheControl().disable().and()
+
+		        .authorizeRequests()
 
 		        // allow anonymous resource requests
-		   //     .antMatchers("/").permitAll().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
+		        // .antMatchers("/").permitAll().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
 
 		        // allow anonymous POSTs to login
+		        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 		        .antMatchers(HttpMethod.POST, "/auth/").permitAll()
 
 		        // allow anonymous GETs to API
-		//        .antMatchers(HttpMethod.GET, "/api/**").permitAll()
+		        // .antMatchers(HttpMethod.GET, "/api/**").permitAll()
 
 		        // defined Admin only API area
 		        .antMatchers("/admin/**").hasRole("ADMIN")
 
 		        // all other request need to be authenticated
-		   //     .anyRequest().hasRole("USER").and()
-		        .anyRequest().authenticated().and()
+		        // .anyRequest().hasRole("USER").and()
+		        .anyRequest().authenticated()
 
-		        // custom JSON based authentication by POST of  {"username":"<name>","password":"<password>"} which sets the token header upon authentication
-		        .addFilterBefore(new StatelessLoginFilter("/auth/", authenticationManager(), userService, validationService, tokenAuthenticationService ), 
-		        		UsernamePasswordAuthenticationFilter.class)
+		        .and().addFilterBefore(new SimpleCORSFilter(), ChannelProcessingFilter.class)
 
-		        // custom Token based authentication based on the header  previously given to the client
+		        // custom JSON based authentication by POST of {"username":"<name>","password":"<password>"} which sets the token header upon authentication
+		        .addFilterBefore(new StatelessLoginFilter("/auth/", authenticationManager(), userService, validationService, tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
+
+		        // custom Token based authentication based on the header previously given to the client
 		        .addFilterBefore(new StatelessAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class);
-		
 		//@formatter:on
 	}
 

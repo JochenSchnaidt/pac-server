@@ -1,6 +1,7 @@
 package com.prodyna.pac.auth;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,15 +19,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.service.TokenAuthenticationService;
 import com.prodyna.pac.service.UserService;
 import com.prodyna.pac.validation.UserValidationService;
 
+
+
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
+
+	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private UserService service;
@@ -42,11 +49,30 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
+
+	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-		final UserDTO requestUser = new ObjectMapper().readValue(request.getInputStream(), UserDTO.class);
+		 log.debug("START");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
+		
+        String  message = org.apache.commons.io.IOUtils.toString(request.getInputStream()  , Charset.defaultCharset());
+        log.debug(message);
+        
+        log.debug("still fine");
+  
+        if(StringUtils.isEmpty(message)){
+        	return null;
+        }
+        
+        
+		final MyRequest requestUser = objectMapper.readValue( message, MyRequest.class);
 
+		 
+		
 		log.debug("requestUser: " + requestUser.toString());
 
 		validationService.validateEmail(requestUser.getEmail());
