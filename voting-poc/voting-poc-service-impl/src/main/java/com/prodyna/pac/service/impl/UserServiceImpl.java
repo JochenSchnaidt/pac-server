@@ -21,8 +21,13 @@ import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.persistence.UserPersistenceService;
 import com.prodyna.pac.security.Roles;
 import com.prodyna.pac.service.UserService;
-import com.prodyna.pac.validation.UserValidationService;
+import com.prodyna.pac.validation.ValidationService;
 
+/**
+ * Implementation class of {@code UserService}.
+ * 
+ * @see UserService
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -35,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	private UserVotingsDeletionService votingService;
 
 	@Autowired
-	private UserValidationService validationService;
+	private ValidationService validationService;
 
 	@Override
 	public UserDTO create(UserDTO data) {
@@ -56,6 +61,11 @@ public class UserServiceImpl implements UserService {
 		return persisted;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The update is only performed, when the user changes it's own data or has administrator privileges.
+	 */
 	@Override
 	public UserDTO update(UserDTO data) {
 
@@ -128,6 +138,11 @@ public class UserServiceImpl implements UserService {
 		return dto;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The operation is only performed, when the user deletes it's own dataset or has administrator privileges.
+	 */
 	@Override
 	public OperationResult delete(String id) {
 
@@ -153,6 +168,15 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	/**
+	 * Checks if two {@code String} variables have the same value
+	 * 
+	 * @param oldValue
+	 *            the already existing value
+	 * @param newValue
+	 *            the possibly new value
+	 * @return {@code true} if the value changed, {@code false} otherwise
+	 */
 	private boolean changed(String oldValue, String newValue) {
 
 		if (StringUtils.hasText(newValue) && !oldValue.equals(newValue)) {
@@ -161,6 +185,15 @@ public class UserServiceImpl implements UserService {
 		return false;
 	}
 
+	/**
+	 * Checks if a provided new password is acceptable. The new password must not be the same than the existing.
+	 * 
+	 * @param oldValue
+	 *            the existing hash value of the old password
+	 * @param newValue
+	 *            the provided new password
+	 * @return {@code true} if the new password is acceptable, {@code false} otherwise
+	 */
 	private boolean changedPassword(String oldValue, String newValue) {
 
 		if (StringUtils.isEmpty(newValue)) {
@@ -169,14 +202,37 @@ public class UserServiceImpl implements UserService {
 		return !checkPassword(newValue, oldValue);
 	}
 
+	/**
+	 * Creates a hash from a given password
+	 * 
+	 * @param password
+	 *            the provided password in plain text
+	 * @return the password's hash
+	 */
 	private final String hashPassword(String password) {
 		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
+	/**
+	 * Checks if a provided password is valid in combination with the stored hash value
+	 * 
+	 * @param password
+	 *            the provided password in plain text
+	 * @param hashed
+	 *            the hashed password
+	 * @return {@code true} if the password's hash is equal the stored hash, {@code false} otherwise
+	 */
 	private final boolean checkPassword(String password, String hashed) {
 		return BCrypt.checkpw(password, hashed);
 	}
 
+	/**
+	 * Checks if the current user has appropriate rights to perform a operation.
+	 * 
+	 * @param userId
+	 *            the current user
+	 * @return {@code true} if the user is authorized, {@code false} otherwise
+	 */
 	private boolean isAuthorized(String userId) {
 
 		String authenticatedUsers = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

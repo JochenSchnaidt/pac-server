@@ -14,8 +14,13 @@ import com.prodyna.pac.dto.ResultState;
 import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.persistence.VotePersistenceService;
 import com.prodyna.pac.service.VoteService;
-import com.prodyna.pac.validation.VoteValidationService;
+import com.prodyna.pac.validation.ValidationService;
 
+/**
+ * Implementation class of {@code VoteService}.
+ * 
+ * @see VoteService
+ */
 @Service
 public class VoteServiceImpl implements VoteService {
 
@@ -25,7 +30,7 @@ public class VoteServiceImpl implements VoteService {
 	private VotePersistenceService persistenceService;
 
 	@Autowired
-	private VoteValidationService validationService;
+	private ValidationService validationService;
 
 	@Override
 	public VoteDTO create(VoteDTO data) {
@@ -43,6 +48,11 @@ public class VoteServiceImpl implements VoteService {
 		return persisted;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The update can only be applied as long as no user voted already
+	 */
 	@Override
 	public VoteDTO update(VoteDTO data) {
 
@@ -110,6 +120,11 @@ public class VoteServiceImpl implements VoteService {
 		return dto;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The deletion can only be applied as long as no user voted already
+	 */
 	@Override
 	public OperationResult delete(String id) {
 
@@ -130,14 +145,6 @@ public class VoteServiceImpl implements VoteService {
 		}
 	}
 
-	private boolean changed(String oldValue, String newValue) {
-
-		if (StringUtils.hasText(newValue) && !oldValue.equals(newValue)) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
 	public ListWrapperDTO<VoteDTO> getAll() {
 
@@ -149,5 +156,22 @@ public class VoteServiceImpl implements VoteService {
 		dto.setOperationResult(new OperationResult(ResultState.SUCCESS, Optional.empty()));
 		return dto;
 
+	}
+
+	/**
+	 * Checks if two {@code String} variables have the same value
+	 * 
+	 * @param oldValue
+	 *            the already existing value
+	 * @param newValue
+	 *            the possibly new value
+	 * @return {@code true} if the value changed, {@code false} otherwise
+	 */
+	private boolean changed(String oldValue, String newValue) {
+
+		if (StringUtils.hasText(newValue) && !oldValue.equals(newValue)) {
+			return true;
+		}
+		return false;
 	}
 }

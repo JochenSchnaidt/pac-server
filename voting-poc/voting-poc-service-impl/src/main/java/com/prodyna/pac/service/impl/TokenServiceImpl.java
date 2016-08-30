@@ -1,5 +1,7 @@
 package com.prodyna.pac.service.impl;
 
+import static com.prodyna.pac.Constants.TEN_DAYS;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,12 +20,17 @@ import org.springframework.util.StringUtils;
 
 import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.service.TokenService;
-import com.prodyna.pac.validation.TokenValidationService;
+import com.prodyna.pac.validation.ValidationService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * Implementation class of {@code TokenService}. Uses the given shared secret from {@code appplication.yml}.
+ * 
+ * @see TokenService
+ */
 @Service
 public class TokenServiceImpl implements TokenService {
 
@@ -39,7 +46,7 @@ public class TokenServiceImpl implements TokenService {
 	private String secret;
 
 	@Autowired
-	private TokenValidationService validationService;
+	private ValidationService validationService;
 
 	@Override
 	public String generateToken(UserDTO user) {
@@ -73,7 +80,7 @@ public class TokenServiceImpl implements TokenService {
 		Claims claims = getClaimsFromToken(token);
 
 		if (null == claims) {
-			log.debug("no claims in token");
+			log.error("no claims in token");
 			return null;
 		}
 
@@ -97,7 +104,7 @@ public class TokenServiceImpl implements TokenService {
 
 		LocalDateTime created = LocalDateTime.ofInstant(Instant.ofEpochMilli((long) claims.get(CLAIM_KEY_CREATED)), ZoneId.systemDefault());
 
-		if (LocalDateTime.now().isAfter(created.plusWeeks(1L))) {
+		if (LocalDateTime.now().isAfter(created.plusDays(TEN_DAYS))) {
 			log.error("token is expired");
 			return null;
 		} else {
@@ -120,14 +127,21 @@ public class TokenServiceImpl implements TokenService {
 		}
 	}
 
+	/**
+	 * Extracts the {@code Claims} from a given token
+	 * 
+	 * @param token
+	 *            the encrypted token
+	 * @return the extracted claims
+	 */
 	private Claims getClaimsFromToken(String token) {
 		Claims claims;
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 			log.debug("claims: " + claims.toString());
 		} catch (Exception e) {
-			log.error("Exception while parsing token: " +e.getMessage());
-			if(log.isDebugEnabled()){
+			log.error("Exception while parsing token: " + e.getMessage());
+			if (log.isDebugEnabled()) {
 				e.printStackTrace();
 			}
 			claims = null;

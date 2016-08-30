@@ -8,132 +8,143 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.prodyna.pac.dto.*;
+import com.prodyna.pac.dto.OperationResult;
+import com.prodyna.pac.dto.ResultState;
+import com.prodyna.pac.dto.SelectionDTO;
+import com.prodyna.pac.dto.UserDTO;
+import com.prodyna.pac.dto.VoteDTO;
+import com.prodyna.pac.dto.VotingDTO;
 import com.prodyna.pac.persistence.UserPersistenceService;
 import com.prodyna.pac.persistence.VotePersistenceService;
 import com.prodyna.pac.service.VotingService;
-import com.prodyna.pac.validation.VotingValidationService;
+import com.prodyna.pac.validation.ValidationService;
 
+/**
+ * Implementation class of {@code VotingService} and {@code UserVotingsDeletionService}.
+ * 
+ * @see VotingService
+ * @see UserVotingsDeletionService
+ */
 @Service
 public class VotingServiceImpl implements VotingService, UserVotingsDeletionService {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VotePersistenceService voteService;
+	@Autowired
+	private VotePersistenceService voteService;
 
-    @Autowired
-    private UserPersistenceService userService;
+	@Autowired
+	private UserPersistenceService userService;
 
-    @Autowired
-    private VotingValidationService validationService;
+	@Autowired
+	private ValidationService validationService;
 
-    @Override
-    public VoteDTO create(VotingDTO data) {
+	@Override
+	public VoteDTO create(VotingDTO data) {
 
-        log.debug("create voting from data: " + data.toString());
+		log.debug("create voting from data: " + data.toString());
 
-        validationService.validateVotingData(data);
-        log.debug("data passed validation");
+		validationService.validateVotingData(data);
+		log.debug("data passed validation");
 
-        VoteDTO vote = voteService.get(data.getVoteId());
-        UserDTO user = userService.getById(data.getUserId());
+		VoteDTO vote = voteService.get(data.getVoteId());
+		UserDTO user = userService.getById(data.getUserId());
 
-        vote.getOptions().forEach(option -> {
-            if (option.getId().equals(data.getOptionId())) {
-                option.incrementCounter();
-            }
-        });
+		vote.getOptions().forEach(option -> {
+			if (option.getId().equals(data.getOptionId())) {
+				option.incrementCounter();
+			}
+		});
 
-        vote.setEditable(false);
+		vote.setEditable(false);
 
-        VoteDTO persistedVote = voteService.update(vote);
-        log.debug("voting for vote with id [" + persistedVote.getId() + "] updated");
+		VoteDTO persistedVote = voteService.update(vote);
+		log.debug("voting for vote with id [" + persistedVote.getId() + "] updated");
 
-        SelectionDTO selection = new SelectionDTO(data.getVoteId(), data.getOptionId());
-        user.getSelections().add(selection);       
-        
-        userService.update(user);
-        log.debug("voting for user with id [" + user.getId() + "] updated");
+		SelectionDTO selection = new SelectionDTO(data.getVoteId(), data.getOptionId());
+		user.getSelections().add(selection);
 
-        OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("vote counted"));
-        persistedVote.setOperationResult(result);
+		userService.update(user);
+		log.debug("voting for user with id [" + user.getId() + "] updated");
 
-        return persistedVote;
-    }
+		OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("vote counted"));
+		persistedVote.setOperationResult(result);
 
-    @Override
-    public VoteDTO update(VotingDTO data) {
-        log.debug("update voting from data: " + data.toString());
+		return persistedVote;
+	}
 
-        validationService.validateVotingData(data);
-        log.debug("data passed validation");
+	@Override
+	public VoteDTO update(VotingDTO data) {
+		log.debug("update voting from data: " + data.toString());
 
-        VoteDTO vote = voteService.get(data.getVoteId());
-        UserDTO user = userService.getById(data.getUserId());
+		validationService.validateVotingData(data);
+		log.debug("data passed validation");
 
-        Iterator<SelectionDTO> iterator = user.getSelections().iterator();
+		VoteDTO vote = voteService.get(data.getVoteId());
+		UserDTO user = userService.getById(data.getUserId());
 
-        String oldValue = "";
-        while (iterator.hasNext()) {
-            SelectionDTO selection = iterator.next();
-            if (selection.getVoteId().equals(data.getVoteId())) {
-                oldValue = selection.getVotedOptionId();
-                iterator.remove();
-            }
-        }
+		Iterator<SelectionDTO> iterator = user.getSelections().iterator();
 
-        SelectionDTO selection = new SelectionDTO(data.getVoteId(), data.getOptionId());
-        user.getSelections().add(selection);
-        userService.update(user);
-        log.debug("voting for user with id [" + user.getId() + "] updated");
+		String oldValue = "";
+		while (iterator.hasNext()) {
+			SelectionDTO selection = iterator.next();
+			if (selection.getVoteId().equals(data.getVoteId())) {
+				oldValue = selection.getVotedOptionId();
+				iterator.remove();
+			}
+		}
 
-        final String finalOldValue = oldValue;
-        vote.getOptions().forEach(option -> {
-            if (option.getId().equals(data.getOptionId())) {
-                option.incrementCounter();
-            }
-            if (option.getId().equals(finalOldValue)) {
-                option.decrementCounter();
-            }
-        });
+		SelectionDTO selection = new SelectionDTO(data.getVoteId(), data.getOptionId());
+		user.getSelections().add(selection);
+		userService.update(user);
+		log.debug("voting for user with id [" + user.getId() + "] updated");
 
-        VoteDTO persistedVote = voteService.update(vote);
-        log.debug("voting for vote with id [" + persistedVote.getId() + "] updated");
+		final String finalOldValue = oldValue;
+		vote.getOptions().forEach(option -> {
+			if (option.getId().equals(data.getOptionId())) {
+				option.incrementCounter();
+			}
+			if (option.getId().equals(finalOldValue)) {
+				option.decrementCounter();
+			}
+		});
 
-        OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("vote counted"));
-        persistedVote.setOperationResult(result);
+		VoteDTO persistedVote = voteService.update(vote);
+		log.debug("voting for vote with id [" + persistedVote.getId() + "] updated");
 
-        return persistedVote;
-    }
+		OperationResult result = new OperationResult(ResultState.SUCCESS, Optional.of("vote counted"));
+		persistedVote.setOperationResult(result);
 
-    @Override
-    public OperationResult deleteVotings(String userId) {
+		return persistedVote;
+	}
 
-        log.debug("remove votings from user [" + userId + "]");
+	@Override
+	public OperationResult deleteVotings(String userId) {
 
-        validationService.validateEntityId(userId);
-        log.debug("data passed validation");
+		log.debug("remove votings from user [" + userId + "]");
 
-        UserDTO user = userService.getById(userId);
-        Iterator<SelectionDTO> iterator = user.getSelections().iterator();
+		validationService.validateEntityId(userId);
+		log.debug("data passed validation");
 
-        while (iterator.hasNext()) {
-            SelectionDTO selection = iterator.next();
+		UserDTO user = userService.getById(userId);
+		Iterator<SelectionDTO> iterator = user.getSelections().iterator();
 
-            VoteDTO vote = voteService.get(selection.getVoteId());
+		while (iterator.hasNext()) {
+			SelectionDTO selection = iterator.next();
 
-            vote.getOptions().forEach(option -> {
-                if (option.getId().equals(selection.getVotedOptionId())) {
-                    option.decrementCounter();
-                }
-            });
+			VoteDTO vote = voteService.get(selection.getVoteId());
 
-            voteService.update(vote);
-        }
+			vote.getOptions().forEach(option -> {
+				if (option.getId().equals(selection.getVotedOptionId())) {
+					option.decrementCounter();
+				}
+			});
 
-        log.debug("all votings from user with id [" + userId + "] deleted");
+			voteService.update(vote);
+		}
 
-        return new OperationResult(ResultState.SUCCESS, Optional.of("votings deleted counted"));
-    }
+		log.debug("all votings from user with id [" + userId + "] deleted");
+
+		return new OperationResult(ResultState.SUCCESS, Optional.of("votings deleted counted"));
+	}
 }
