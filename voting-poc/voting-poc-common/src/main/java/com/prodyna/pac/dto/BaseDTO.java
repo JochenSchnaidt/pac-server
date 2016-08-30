@@ -1,5 +1,8 @@
 package com.prodyna.pac.dto;
 
+/**
+ * Abstract class for all DTOs to provide meta data of an operation via {@link OperationResult}.
+ */
 public abstract class BaseDTO {
 
     protected OperationResult operationResult;

@@ -6,9 +6,9 @@ package com.prodyna.pac.exception;
 public class ValidationException extends RuntimeException {
 
     /**
-     * Generated default serial version UID
+     * Default serial version UID
      */
-    private static final long serialVersionUID = 389987699263898865L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Instantiates a new ValidationException

@@ -6,7 +6,7 @@ package com.prodyna.pac.exception;
 public class ProcessingException extends RuntimeException {
 
     /**
-     * Generated default serial version UID
+     * Default serial version UID
      */
     private static final long serialVersionUID = 3896695426389123465L;
 

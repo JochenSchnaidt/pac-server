@@ -7,15 +7,25 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.prodyna.pac.dto.UserDTO;
 
-public class UserAuthentication   implements Authentication {
+/**
+ * Wrapper class for {@link UserDTO} to implement spring's {@link Authentication}.
+ */
+public class UserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = 1L;
-	
-	private final UserDTO user;
-	private boolean authenticated = true;
 
+	private final UserDTO user;
+	private boolean authenticated = false;
+
+	/**
+	 * Instantiates a new UserAuthentication from given user
+	 * 
+	 * @param user
+	 *            the given user to authenticate
+	 */
 	public UserAuthentication(UserDTO user) {
 		this.user = user;
+		this.authenticated = true;
 	}
 
 	@Override

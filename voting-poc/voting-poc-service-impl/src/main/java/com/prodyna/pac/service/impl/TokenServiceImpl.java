@@ -73,6 +73,7 @@ public class TokenServiceImpl implements TokenService {
 		Claims claims = getClaimsFromToken(token);
 
 		if (null == claims) {
+			log.debug("no claims in token");
 			return null;
 		}
 
@@ -125,6 +126,10 @@ public class TokenServiceImpl implements TokenService {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 			log.debug("claims: " + claims.toString());
 		} catch (Exception e) {
+			log.error("Exception while parsing token: " +e.getMessage());
+			if(log.isDebugEnabled()){
+				e.printStackTrace();
+			}
 			claims = null;
 		}
 		return claims;

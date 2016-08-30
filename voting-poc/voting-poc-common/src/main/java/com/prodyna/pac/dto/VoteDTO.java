@@ -4,6 +4,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * System wide DTO for a vote entity from persistence layer.
+ * 
+ * @see BaseDTO
+ */
 public class VoteDTO extends BaseDTO {
 
 	private String id;
@@ -86,9 +91,8 @@ public class VoteDTO extends BaseDTO {
 
 	@Override
 	public String toString() {
-		return "VoteDTO [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options
-				+ ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy=" + createdBy
-				+ ", createdByUserName=" + createdByUserName + "]";
+		return "VoteDTO [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options + ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy="
+		        + createdBy + ", createdByUserName=" + createdByUserName + "]";
 	}
 
 }

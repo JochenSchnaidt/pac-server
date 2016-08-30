@@ -1,5 +1,8 @@
 package com.prodyna.pac.dto;
 
+/**
+ * System wide DTO for an option of a vote.
+ */
 public class OptionDTO {
 
     private String id;

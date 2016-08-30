@@ -6,9 +6,9 @@ package com.prodyna.pac.exception;
 public class EntityNotFoundException extends RuntimeException {
 
     /**
-     * Generated default serial version UID
+     * Default serial version UID
      */
-    private static final long serialVersionUID = 1234567890;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Instantiates a new EntityNotFoundException
