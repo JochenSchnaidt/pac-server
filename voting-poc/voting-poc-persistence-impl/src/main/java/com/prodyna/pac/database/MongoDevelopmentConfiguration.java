@@ -26,49 +26,54 @@ import com.mongodb.ServerAddress;
 @EnableMongoRepositories(basePackages = "com.prodyna.pac.persistence")
 public class MongoDevelopmentConfiguration extends AbstractMongoConfiguration {
 
-    @Value("${mongodb.host}")
-    String host;
+	@Value("${mongodb.host}")
+	String host;
 
-    @Value("${mongodb.port}")
-    int port;
+	@Value("${mongodb.port}")
+	int port;
 
-    @Value("${mongodb.database}")
-    String database;
+	@Value("${mongodb.database}")
+	String database;
 
-    @Value("${mongodb.authDatabase}")
-    String authDatabase;
+	@Value("${mongodb.authDatabase}")
+	String authDatabase;
 
-    @Value("${mongodb.user}")
-    String user;
+	@Value("${mongodb.user}")
+	String user;
 
-    @Value("${mongodb.password}")
-    String password;
+	@Value("${mongodb.password}")
+	String password;
 
-    @Override
-    protected String getDatabaseName() {
-        return database;
-    }
+	@Override
+	protected String getDatabaseName() {
+		return database;
+	}
 
-    @Override
-    public Mongo mongo() throws Exception {
-        return getMongoClient();
-    }
+	@Override
+	public Mongo mongo() throws Exception {
+		return getMongoClient();
+	}
 
-    @Override
-    @Bean
-    public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(new SimpleMongoDbFactory(getMongoClient(), getDatabaseName()));
-    }
+	@Override
+	@Bean
+	public MongoTemplate mongoTemplate() throws Exception {
+		return new MongoTemplate(new SimpleMongoDbFactory(getMongoClient(), getDatabaseName()));
+	}
 
-    private MongoClient getMongoClient() {
+	/**
+	 * Instantiates a {@code MongoClient} for the usage of the single instance MongoDB configuration of the application.
+	 *
+	 * @return the configured client
+	 */
+	private MongoClient getMongoClient() {
 
-        final List<MongoCredential> credentials = new ArrayList<>();
-        MongoCredential credential = MongoCredential.createScramSha1Credential(user, authDatabase, password.toCharArray());
-        credentials.add(credential);
+		final List<MongoCredential> credentials = new ArrayList<>();
+		MongoCredential credential = MongoCredential.createScramSha1Credential(user, authDatabase, password.toCharArray());
+		credentials.add(credential);
 
-        MongoClientOptions options = MongoClientOptions.builder().cursorFinalizerEnabled(false).build();
+		MongoClientOptions options = MongoClientOptions.builder().cursorFinalizerEnabled(false).build();
 
-        return new MongoClient(new ServerAddress(host, port), credentials, options);
-    }
+		return new MongoClient(new ServerAddress(host, port), credentials, options);
+	}
 
 }

@@ -2,6 +2,11 @@ package com.prodyna.pac.persistence.entities;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Entity class to represent an user's selection on a vote.
+ * <p>
+ * This class is annotated to work with MongoDB.
+ */
 @Document
 public class Selection {
 

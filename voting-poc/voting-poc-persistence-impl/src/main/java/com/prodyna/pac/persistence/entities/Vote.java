@@ -11,6 +11,11 @@ import org.springframework.util.StringUtils;
 import com.prodyna.pac.dto.OptionDTO;
 import com.prodyna.pac.exception.ValidationException;
 
+/**
+ * Entity class to represent a vote. Creation and update of entities only via {@code Builder}.
+ * <p>
+ * This class is annotated to work with MongoDB.
+ */
 @Document(collection = "votes")
 public class Vote {
 
@@ -29,6 +34,12 @@ public class Vote {
 		super();
 	}
 
+	/**
+	 * Private constructor to prevent instantiation of entity without {@code Builder}
+	 *
+	 * @param builder
+	 *            preinitialized {@code Builder}
+	 */
 	private Vote(Builder builder) {
 
 		if (null == builder) {
@@ -82,11 +93,13 @@ public class Vote {
 
 	@Override
 	public String toString() {
-		return "Vote [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options
-				+ ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy=" + createdBy
-				+ ", createdByUserName=" + createdByUserName + "]";
+		return "Vote [id=" + id + ", topic=" + topic + ", description=" + description + ", options=" + options + ", editable=" + editable + ", creationDate=" + creationDate + ", createdBy="
+		        + createdBy + ", createdByUserName=" + createdByUserName + "]";
 	}
 
+	/**
+	 * Builder for {@code Vote}
+	 */
 	public static class Builder {
 
 		private String id;
@@ -98,10 +111,19 @@ public class Vote {
 		private Date creationDate;
 		private String createdByUserName;
 
+		/**
+		 * Instantiate raw {@code Builder} instance
+		 */
 		public Builder() {
 			creationDate(null);
 		}
 
+		/**
+		 * Sets the {@code Vote.topic} property
+		 *
+		 * @param topic
+		 * @return {@code Builder} instance
+		 */
 		public Builder topic(String topic) {
 			if (StringUtils.hasText(topic)) {
 				this.topic = topic.trim();
@@ -111,6 +133,12 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.description} property
+		 *
+		 * @param description
+		 * @return {@code Builder} instance
+		 */
 		public Builder description(String description) {
 			if (StringUtils.hasText(description)) {
 				this.description = description.trim();
@@ -120,6 +148,12 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.creationDate} property
+		 *
+		 * @param creationDate
+		 * @return {@code Builder} instance
+		 */
 		public Builder creationDate(Date creationDate) {
 			if (null != creationDate) {
 				this.creationDate = creationDate;
@@ -129,6 +163,12 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.id} property
+		 *
+		 * @param id
+		 * @return {@code Builder} instance
+		 */
 		public Builder id(String id) {
 			if (StringUtils.hasText(id)) {
 				this.id = id;
@@ -138,6 +178,12 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.options} property
+		 *
+		 * @param options
+		 * @return {@code Builder} instance
+		 */
 		public Builder options(Set<OptionDTO> options) {
 
 			final Set<Option> set = new HashSet<Option>();
@@ -159,11 +205,23 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.editable} property
+		 *
+		 * @param editable
+		 * @return {@code Builder} instance
+		 */
 		public Builder editable(boolean editable) {
 			this.editable = editable;
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.createdBy} property
+		 *
+		 * @param createdBy
+		 * @return {@code Builder} instance
+		 */
 		public Builder createdBy(String createdBy) {
 
 			if (StringUtils.hasText(createdBy)) {
@@ -174,6 +232,12 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code Vote.createdByUserName} property
+		 *
+		 * @param createdByUserName
+		 * @return {@code Builder} instance
+		 */
 		public Builder createdByUserName(String createdByUserName) {
 
 			if (StringUtils.hasText(createdByUserName)) {
@@ -184,6 +248,13 @@ public class Vote {
 			return this;
 		}
 
+		/**
+		 * Creates the actual {@code Vote} instance.
+		 *
+		 * @return the {@code User} entity
+		 * @throws ValidationException
+		 *             if a required value is not present
+		 */
 		public Vote build() throws ValidationException {
 			return new Vote(this);
 		}

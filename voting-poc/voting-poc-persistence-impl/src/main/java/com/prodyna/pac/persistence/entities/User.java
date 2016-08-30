@@ -12,6 +12,11 @@ import org.springframework.util.StringUtils;
 import com.prodyna.pac.dto.SelectionDTO;
 import com.prodyna.pac.exception.ValidationException;
 
+/**
+ * Entity class to represent an user. Creation and update of entities only via {@code Builder}.
+ * <p>
+ * This class is annotated to work with MongoDB.
+ */
 @Document(collection = "users")
 public class User {
 
@@ -31,6 +36,12 @@ public class User {
 		super();
 	}
 
+	/**
+	 * Private constructor to prevent instantiation of entity without {@code Builder}
+	 *
+	 * @param builder
+	 *            preinitialized {@code Builder}
+	 */
 	private User(Builder builder) {
 
 		if (null == builder) {
@@ -81,11 +92,13 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", administrator=" + administrator + ", selections=" + selections
-				+ ", creationDate=" + creationDate + "]";
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=***" + ", administrator=" + administrator + ", selections=" + selections
+		        + ", creationDate=" + creationDate + "]";
 	}
 
+	/**
+	 * Builder for {@code User}
+	 */
 	public static class Builder {
 
 		private String id;
@@ -97,10 +110,19 @@ public class User {
 		private Set<Selection> selections;
 		private Date creationDate;
 
+		/**
+		 * Instantiate raw {@code Builder} instance
+		 */
 		public Builder() {
 			creationDate(null);
 		}
 
+		/**
+		 * Sets the {@code User.firstName} property
+		 *
+		 * @param firstName
+		 * @return {@code Builder} instance
+		 */
 		public Builder firstName(String firstName) {
 			if (StringUtils.hasText(firstName)) {
 				this.firstName = firstName.trim();
@@ -110,6 +132,12 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.lastName} property
+		 *
+		 * @param lastName
+		 * @return {@code Builder} instance
+		 */
 		public Builder lastName(String lastName) {
 			if (StringUtils.hasText(lastName)) {
 				this.lastName = lastName.trim();
@@ -119,6 +147,12 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.email} property
+		 *
+		 * @param email
+		 * @return {@code Builder} instance
+		 */
 		public Builder email(String email) {
 			if (StringUtils.hasText(email)) {
 				this.email = email.trim();
@@ -128,6 +162,12 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.password} property
+		 *
+		 * @param password
+		 * @return {@code Builder} instance
+		 */
 		public Builder password(String password) {
 			if (StringUtils.hasText(password)) {
 				this.password = password;
@@ -137,6 +177,12 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.id} property
+		 *
+		 * @param id
+		 * @return {@code Builder} instance
+		 */
 		public Builder id(String id) {
 			if (StringUtils.hasText(id)) {
 				this.id = id;
@@ -146,11 +192,23 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.administrator} property
+		 *
+		 * @param firstName
+		 * @return {@code Builder} instance
+		 */
 		public Builder isAdministrator(boolean administrator) {
 			this.administrator = administrator;
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.creationDate} property
+		 *
+		 * @param creationDate
+		 * @return {@code Builder} instance
+		 */
 		public Builder creationDate(Date creationDate) {
 			if (null != creationDate) {
 				this.creationDate = creationDate;
@@ -160,6 +218,12 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Sets the {@code User.selections} firstName property
+		 *
+		 * @param selections
+		 * @return {@code Builder} instance
+		 */
 		public Builder selections(Set<SelectionDTO> selections) {
 
 			final Set<Selection> set = new HashSet<Selection>();
@@ -179,6 +243,13 @@ public class User {
 			return this;
 		}
 
+		/**
+		 * Creates the actual {@code User} instance.
+		 *
+		 * @return the {@code User} entity
+		 * @throws ValidationException
+		 *             if a required value is not present
+		 */
 		public User build() throws ValidationException {
 			return new User(this);
 		}
