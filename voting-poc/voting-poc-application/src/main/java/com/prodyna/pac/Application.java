@@ -9,39 +9,47 @@ import java.util.Optional;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Starter class of the application.
+ */
 @SpringBootApplication
 public class Application {
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication application = new SpringApplication(Application.class);
+	public static void main(String[] args) throws Exception {
+		SpringApplication application = new SpringApplication(Application.class);
 
-        Optional<String> stage = determineStage();
+		Optional<String> stage = determineStage();
 
-        if (stage.isPresent()) {
-            application.setAdditionalProfiles(stage.get());
-            application.run(args);
-        } else {
-            System.err.println("No valid stage configuration detected. Application shut down.");
-        }
-    }
+		if (stage.isPresent()) {
+			application.setAdditionalProfiles(stage.get());
+			application.run(args);
+		} else {
+			System.err.println("No valid stage configuration detected. Application shut down.");
+		}
+	}
 
-    private static Optional<String> determineStage() {
+	/**
+	 * Determines the stage by analyzing the staging information from the system environment
+	 *
+	 * @return the correct stage if it was identified
+	 */
+	private static Optional<String> determineStage() {
 
-        Map<String, String> systemEnv = System.getenv();
+		Map<String, String> systemEnv = System.getenv();
 
-        if (systemEnv.containsKey(SYSTEM_VARIABLE) || systemEnv.containsKey(SYSTEM_VARIABLE.toUpperCase())) {
+		if (systemEnv.containsKey(SYSTEM_VARIABLE) || systemEnv.containsKey(SYSTEM_VARIABLE.toUpperCase())) {
 
-            String stage = systemEnv.get(SYSTEM_VARIABLE).toLowerCase();
+			String stage = systemEnv.get(SYSTEM_VARIABLE).toLowerCase();
 
-            if (KNOWN_STAGES.contains(stage)) {
-                return Optional.of(stage);
-            }
+			if (KNOWN_STAGES.contains(stage)) {
+				return Optional.of(stage);
+			}
 
-            return Optional.empty();
+			return Optional.empty();
 
-        } else {
-            return Optional.empty();
-        }
-    }
+		} else {
+			return Optional.empty();
+		}
+	}
 
 }

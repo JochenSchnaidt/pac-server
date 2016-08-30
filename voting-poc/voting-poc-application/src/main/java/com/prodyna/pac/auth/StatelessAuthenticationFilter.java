@@ -17,6 +17,13 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.prodyna.pac.service.TokenAuthenticationService;
 
+/**
+ * Custom filter to handle JWT token provided by custom header field.
+ * <p>
+ * Get further information <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">here</a>.
+ *
+ * @see GenericFilterBean
+ */
 public class StatelessAuthenticationFilter extends GenericFilterBean {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -28,31 +35,35 @@ public class StatelessAuthenticationFilter extends GenericFilterBean {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest req, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
 		HttpServletRequest request = (HttpServletRequest) req;
-		
-		Enumeration headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String key = (String) headerNames.nextElement();
-			String value = request.getHeader(key);
-System.out.println("\t " + key + " - " + value);
+
+		if (log.isDebugEnabled()) {
+			Enumeration<String> headerNames = request.getHeaderNames();
+			while (headerNames.hasMoreElements()) {
+				String key = headerNames.nextElement();
+				String value = request.getHeader(key);
+				log.debug("\t" + key + " - " + value);
+			}
 		}
-		
+
 		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) req);
 
-		if (null != authentication) {
-			log.info("Authentication created: " + authentication.toString());
-			log.info("Authentication isAuthenticated: " + authentication.isAuthenticated());
-			log.info("Authentication details: " + authentication.getDetails().toString());
-			log.info("Authentication getAuthorities: " + authentication.getAuthorities().toString());
-		} else {
-			log.info("Authentication is null");
+		if (log.isDebugEnabled()) {
+			if (null != authentication) {
+				log.debug("Authentication created: " + authentication.toString());
+				log.debug("Authentication isAuthenticated: " + authentication.isAuthenticated());
+				log.debug("Authentication details: " + authentication.getDetails().toString());
+				log.debug("Authentication getAuthorities: " + authentication.getAuthorities().toString());
+			} else {
+				log.debug("Authentication is null");
+			}
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		log.debug("user added to SecurityContextHolder");
 
-		chain.doFilter(req, res); // always continue
+		chain.doFilter(req, response); // always continue
 	}
 }

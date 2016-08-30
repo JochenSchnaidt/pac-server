@@ -1,7 +1,6 @@
 package com.prodyna.pac.auth;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,33 +14,28 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.service.TokenAuthenticationService;
 import com.prodyna.pac.service.UserService;
-import com.prodyna.pac.validation.UserValidationService;
+import com.prodyna.pac.validation.ValidationService;
 
-
-
+/**
+ * Custom filter to handle initial authentication via email and password.
+ */
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-
-	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private UserService service;
-	private UserValidationService validationService;
+	private ValidationService validationService;
 	private TokenAuthenticationService tokenAuthenticationService;
 
-	public StatelessLoginFilter(String urlMapping, AuthenticationManager authManager, UserService service, UserValidationService validationService,
-	        TokenAuthenticationService tokenAuthenticationService) {
+	public StatelessLoginFilter(String urlMapping, AuthenticationManager authManager, UserService service, ValidationService validationService, TokenAuthenticationService tokenAuthenticationService) {
 		super(new AntPathRequestMatcher(urlMapping));
 		this.setAuthenticationManager(authManager);
 		this.service = service;
@@ -49,30 +43,25 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
-
-	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-		 log.debug("START");
-		
 		ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
-		
-        String  message = org.apache.commons.io.IOUtils.toString(request.getInputStream()  , Charset.defaultCharset());
-        log.debug(message);
-        
-        log.debug("still fine");
-  
-        if(StringUtils.isEmpty(message)){
-        	return null;
-        }
-        
-        
-		final MyRequest requestUser = objectMapper.readValue( message, MyRequest.class);
+		objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 
-		 
-		
+		// String message = org.apache.commons.io.IOUtils.toString(request.getInputStream() , Charset.defaultCharset());
+		// log.debug(message);
+		//
+		// log.debug("still fine");
+		//
+		// if(StringUtils.isEmpty(message)){
+		// return null;
+		// }
+		//
+		// final AuthenticationRequest requestUser = objectMapper.readValue( message, AuthenticationRequest.class);
+		// TODO remove apache io from pom
+
+		final AuthenticationRequest requestUser = objectMapper.readValue(request.getInputStream(), AuthenticationRequest.class);
 		log.debug("requestUser: " + requestUser.toString());
 
 		validationService.validateEmail(requestUser.getEmail());
@@ -81,19 +70,18 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		final UsernamePasswordAuthenticationToken temp = new UsernamePasswordAuthenticationToken(requestUser.getEmail(), requestUser.getPassword());
 		log.debug("UsernamePasswordAuthenticationToken created");
 
+		// Let Spring do the authentication via UserDetails
 		Authentication authentication = getAuthenticationManager().authenticate(temp);
-		log.info("Authentication created: " +authentication.toString());
+		log.debug("Authentication created: " + authentication.toString());
 
 		return authentication;
-
 	}
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-		
-		log.info("Authentication from parameter: " +authentication.toString());
-		
-		
+
+		log.debug("Authentication from parameter: " + authentication.toString());
+
 		// Lookup the complete User object from the database and create an Authentication for it
 		final UserDTO authenticatedUser = service.get(authentication.getName());
 
@@ -104,6 +92,6 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
 		// Add the authentication to the Security context
 		SecurityContextHolder.getContext().setAuthentication(userAuthentication);
-		log.debug("user added to SecurityContextHolder");
+		log.debug("UserAuthentication added to SecurityContextHolder");
 	}
 }
