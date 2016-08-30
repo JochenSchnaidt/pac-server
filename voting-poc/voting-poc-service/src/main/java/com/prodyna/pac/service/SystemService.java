@@ -10,7 +10,7 @@ public interface SystemService {
 	/**
 	 * Checks availability of required core systems like database
 	 * 
-	 * @return A {@code SystemDataDTO} containing the system information
+	 * @return a {@code SystemDataDTO} containing the system information
 	 */
 	public SystemDataDTO checkSystem();
 }

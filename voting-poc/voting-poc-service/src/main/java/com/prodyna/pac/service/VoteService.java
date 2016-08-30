@@ -8,7 +8,7 @@ import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.security.Roles;
 
 /**
- * Service contains all methods which are needed to operate the vote database.
+ * Service contains all methods which are needed to perform vote related operations.
  * <p>
  * All modifications of datasets are protected by Spring Security.
  */
@@ -62,9 +62,11 @@ public interface VoteService {
 
 	/**
 	 * Returns a list of all votes of a specific user in the database
+	 * <p>
+	 * Note that this method is protected by Spring Security
 	 * 
 	 * @param userId
-	 *            the given unique identifier
+	 *            the given unique user identifier
 	 * @return a wrapped list of all votes
 	 */
 	@PreAuthorize(value = Roles.HAS_ROLE_USER)

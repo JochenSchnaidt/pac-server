@@ -7,7 +7,7 @@ import com.prodyna.pac.dto.VotingDTO;
 import com.prodyna.pac.security.Roles;
 
 /**
- * Service contains all methods which are needed to apply user voting on the vote database.
+ * Service contains all methods which are needed to perform voting related operations.
  * <p>
  * All modifications of datasets are protected by Spring Security.
  */
