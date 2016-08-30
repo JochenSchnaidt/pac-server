@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.prodyna.pac.dto.UserDTO;
 
 /**
- * Wrapper class for {@link UserDTO} to implement spring's {@link Authentication}.
+ * Wrapper class for {@link UserDTO} to implement Spring's {@link Authentication}.
  */
 public class UserAuthentication implements Authentication {
 
