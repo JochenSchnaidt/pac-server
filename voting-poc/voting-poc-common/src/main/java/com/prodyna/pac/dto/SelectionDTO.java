@@ -1,7 +1,7 @@
 package com.prodyna.pac.dto;
 
 /**
- * System wide DTO for a user's selection on a vote.
+ * System wide DTO for an user's selection on a vote.
  */
 public class SelectionDTO {
 
