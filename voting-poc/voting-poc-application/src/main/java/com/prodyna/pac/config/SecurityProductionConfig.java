@@ -35,9 +35,9 @@ import com.prodyna.pac.validation.ValidationService;
 @Order(1)
 public class SecurityProductionConfig extends WebSecurityConfigurerAdapter {
 
-	// public SecurityProductionConfig() {
-	// super(true);
-	// }
+	public SecurityProductionConfig() {
+		super(true);
+	}
 
 	@Autowired
 	private UserService userService;

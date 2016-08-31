@@ -1,6 +1,7 @@
 package com.prodyna.pac.auth;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,19 +51,19 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 
-		// String message = org.apache.commons.io.IOUtils.toString(request.getInputStream() , Charset.defaultCharset());
-		// log.debug(message);
-		//
-		// log.debug("still fine");
-		//
-		// if(StringUtils.isEmpty(message)){
-		// return null;
-		// }
-		//
-		// final AuthenticationRequest requestUser = objectMapper.readValue( message, AuthenticationRequest.class);
-		// TODO remove apache io from pom
+		String message = org.apache.commons.io.IOUtils.toString(request.getInputStream(), Charset.defaultCharset());
 
-		final AuthenticationRequest requestUser = objectMapper.readValue(request.getInputStream(), AuthenticationRequest.class);
+		if (log.isDebugEnabled()) {
+			log.debug("read message from request: " + message);
+		}
+
+		if (StringUtils.isEmpty(message)) {
+			log.info("message from request was null");
+			return null;
+		}
+
+		final AuthenticationRequest requestUser = objectMapper.readValue(message, AuthenticationRequest.class);
+
 		log.debug("requestUser: " + requestUser.toString());
 
 		validationService.validateEmail(requestUser.getEmail());
