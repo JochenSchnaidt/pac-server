@@ -22,6 +22,9 @@ import com.prodyna.pac.dto.OperationResult;
 import com.prodyna.pac.dto.UserDTO;
 import com.prodyna.pac.service.UserService;
 
+/**
+ * REST controller to cover calls to {@code /user/} path.
+ */
 @RestController
 @RequestMapping("/user")
 public class UserController extends AbstractController {
@@ -33,6 +36,15 @@ public class UserController extends AbstractController {
 	@Autowired
 	private UserService service;
 
+	/**
+	 * Creates an user from incoming data. Data is parsed and mapped to DTO by {@code Jackson}
+	 *
+	 * @param data
+	 *            incoming DTO
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return the created user including meta informations after persistence
+	 */
 	@RequestMapping(path = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO data, UriComponentsBuilder ucb) {
 
@@ -52,6 +64,15 @@ public class UserController extends AbstractController {
 		return responseEntity;
 	}
 
+	/**
+	 * Updates an user from incoming data. Data is parsed and mapped to DTO by {@code Jackson}
+	 *
+	 * @param data
+	 *            incoming DTO
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return the updated user including meta informations after persistence
+	 */
 	@RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO data, UriComponentsBuilder ucb) {
 
@@ -71,6 +92,15 @@ public class UserController extends AbstractController {
 		return responseEntity;
 	}
 
+	/**
+	 * Gets a single user, identified by unique email address
+	 *
+	 * @param email
+	 *            the email address
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return the user
+	 */
 	@RequestMapping(path = "/{email:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<UserDTO> getUser(@PathVariable String email, UriComponentsBuilder ucb) {
 
@@ -90,6 +120,13 @@ public class UserController extends AbstractController {
 		return responseEntity;
 	}
 
+	/**
+	 * Returns a list of all users
+	 *
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return a list of all users
+	 */
 	@RequestMapping(path = "all/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<UserDTO>> getAllUser(UriComponentsBuilder ucb) {
 
@@ -105,6 +142,15 @@ public class UserController extends AbstractController {
 		return responseEntities;
 	}
 
+	/**
+	 * Deletes an user, identified by unique identifier
+	 *
+	 * @param userId
+	 *            the unique identifier
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return a wrapped http status code
+	 */
 	@RequestMapping(path = "/{userId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<String> deleteUser(@PathVariable String userId, UriComponentsBuilder ucb) {
 

@@ -19,6 +19,9 @@ import com.prodyna.pac.dto.VoteDTO;
 import com.prodyna.pac.dto.VotingDTO;
 import com.prodyna.pac.service.VotingService;
 
+/**
+ * REST controller to cover calls to {@code /voting/} path.
+ */
 @RestController
 @RequestMapping("/voting")
 public class VotingController extends AbstractController {
@@ -30,6 +33,15 @@ public class VotingController extends AbstractController {
 	@Autowired
 	private VotingService service;
 
+	/**
+	 * Creates a new voting from incoming data. Data is parsed and mapped to DTO by {@code Jackson}
+	 *
+	 * @param data
+	 *            incoming DTO
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return the vote after the voting was incorporated
+	 */
 	@RequestMapping(path = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<VoteDTO> createVoting(@RequestBody VotingDTO data, UriComponentsBuilder ucb) {
 
@@ -47,6 +59,15 @@ public class VotingController extends AbstractController {
 		return responseEntity;
 	}
 
+	/**
+	 * Updates a voting from incoming data. Data is parsed and mapped to DTO by {@code Jackson}
+	 *
+	 * @param data
+	 *            incoming DTO
+	 * @param ucb
+	 *            provided {@code Builder} to support URI requirements
+	 * @return the updated vote after the changed voting was incorporated
+	 */
 	@RequestMapping(path = "/", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<VoteDTO> updateVote(@RequestBody VotingDTO data, UriComponentsBuilder ucb) {
 

@@ -13,45 +13,64 @@ import com.prodyna.pac.exception.EntityNotFoundException;
 import com.prodyna.pac.exception.ProcessingException;
 import com.prodyna.pac.exception.ValidationException;
 
+/**
+ * Base controller for all REST controller to handle {@code Exceptions}.
+ */
 public abstract class AbstractController {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
-    protected <T extends BaseDTO> void checkOperationResult(T dto, String additionalInfo) {
-        checkOperationResult(dto.getOperationResult(), additionalInfo);
-        dto.setOperationResult(null); // remove operation result
-    }
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected void checkOperationResult(OperationResult result, String additionalInfo) {
+	/**
+	 * Trigger check of the {@code OperationResult}, set the {@code OperationResult} afterward to {@code null} to except it from JSON mapping
+	 *
+	 * @param dto
+	 *            the DTO to check
+	 * @param additionalInfo
+	 *            additional provided information from underneath layers
+	 */
+	protected <T extends BaseDTO> void checkOperationResult(T dto, String additionalInfo) {
+		checkOperationResult(dto.getOperationResult(), additionalInfo);
+		dto.setOperationResult(null); // remove operation result
+	}
 
-        if (result.getState().equals(ResultState.FAILURE)) {
-            if (result.getMessage().isPresent()) {
-                throw new ProcessingException(result.getMessage().get());
-            } else {
-                throw new ProcessingException(additionalInfo);
-            }
-        }
-    }
+	/**
+	 * Check if the {@code OperationResult} is positive, throw a {@code ProcessingException} otherwise
+	 *
+	 * @param result
+	 *            the result to check
+	 * @param additionalInfo
+	 *            additional provided information from underneath layers
+	 */
+	protected void checkOperationResult(OperationResult result, String additionalInfo) {
 
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Error dataNotValid(ValidationException e) {
-        return new Error("Data not accepted [" + e.getMessage() + "]");
-    }
+		if (result.getState().equals(ResultState.FAILURE)) {
+			if (result.getMessage().isPresent()) {
+				throw new ProcessingException(result.getMessage().get());
+			} else {
+				throw new ProcessingException(additionalInfo);
+			}
+		}
+	}
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Error voteNotFound(EntityNotFoundException e) {
-    	
-    	log.warn("handled exception: " + e.getMessage());
-    	
-        return new Error("Entity [" + e.getMessage() + "] not found");
-    }
+	@ExceptionHandler(ValidationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public Error dataNotValid(ValidationException e) {
+		return new Error("Data not accepted [" + e.getMessage() + "]");
+	}
 
-    @ExceptionHandler(ProcessingException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public Error errorWhileProcessing(ProcessingException e) {
-        return new Error("Error while processing [" + e.getMessage() + "]");
-    }
+	@ExceptionHandler(EntityNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public Error voteNotFound(EntityNotFoundException e) {
+
+		log.warn("handled exception: " + e.getMessage());
+
+		return new Error("Entity [" + e.getMessage() + "] not found");
+	}
+
+	@ExceptionHandler(ProcessingException.class)
+	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+	public Error errorWhileProcessing(ProcessingException e) {
+		return new Error("Error while processing [" + e.getMessage() + "]");
+	}
 
 }
