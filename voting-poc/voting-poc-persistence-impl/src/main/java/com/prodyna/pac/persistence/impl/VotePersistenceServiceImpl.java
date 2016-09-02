@@ -70,6 +70,7 @@ public class VotePersistenceServiceImpl implements VotePersistenceService {
                 .description(data.getDescription())
                 .editable(data.isEditable())
                 .createdBy(data.getCreatedBy())
+                .createdByUserName(data.getCreatedByUserName())
                 .options(data.getOptions())
                 .creationDate(data.getCreationDate())
                 .build();
