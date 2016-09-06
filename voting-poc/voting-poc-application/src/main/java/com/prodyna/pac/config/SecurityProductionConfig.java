@@ -67,18 +67,9 @@ public class SecurityProductionConfig extends WebSecurityConfigurerAdapter {
 
 		        .authorizeRequests()
 
-		        // allow anonymous resource requests
-		        // .antMatchers("/").permitAll().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
-
 		        // allow anonymous POSTs to login
 		        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 		        .antMatchers(HttpMethod.POST, "/auth/").permitAll()
-
-		        // allow anonymous GETs to API
-		        // .antMatchers(HttpMethod.GET, "/api/**").permitAll()
-
-		        // defined Admin only API area
-		        // .antMatchers("/admin/**").hasRole("ADMIN")
 
 		        // all other request need to be authenticated
 		        // .anyRequest().hasRole("USER").and()
