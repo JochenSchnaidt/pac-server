@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.prodyna.pac</groupId>
 		<artifactId>voting-poc</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>voting-poc-service-impl</artifactId>
 	<name>Voting PoC Service Implementation</name>

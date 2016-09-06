@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.prodyna.pac</groupId>
 	<artifactId>voting-poc</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>Voting PoC</name>
 	<description>Parent project of Voting PoC</description>
@@ -57,4 +57,5 @@
 		<module>voting-poc-persistence</module>
 		<module>voting-poc-persistence-impl</module>
 	</modules>
+
 </project>
